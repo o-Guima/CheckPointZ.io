@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Página de Login</title>
+    <link rel="stylesheet" href="./css/login.css">
+</head>
+<body>
+
+    <div class="login-container">
+        <form action="/api/login" method="POST">
+            <h2>Login</h2>
+
+            <div class="input-group">
+                <label for="username">Usuário</label>
+                <input type="text" id="username" name="usuario" placeholder="Digite seu usuário" required>
+            </div>
+
+            <div class="input-group">
+                <label for="password">Senha</label>
+                <input type="password" id="password" name="senha" placeholder="Digite sua senha" required>
+            </div>
+
+            <a href="#" class="forgot-password">Esqueceu a senha?</a>
+
+            <button type="submit" class="login-button">Entrar</button>
+
+            <div class="signup-link">
+                <p>Não tem uma conta? <a href="/cadastro">Cadastre-se</a></p>
+            </div>
+        </form>
+    </div>
+
+</body>
+</html>

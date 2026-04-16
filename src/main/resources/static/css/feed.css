@@ -1,0 +1,502 @@
+/* =======================================
+   1. ESTILOS GLOBAIS E VARIÁVEIS
+   ======================================= */
+
+/* Importando as cores do tema */
+:root {
+  --color-bg-dark: #0f0c29;
+  --color-bg-mid: #302b63;
+  --color-bg-light: #24243e;
+  --color-primary-purple: #6a0dad;
+  --color-primary-purple-light: #8a2be2;
+  --color-text: #e0e0e0;
+  --color-text-muted: #aaa;
+  --color-border: #302b63;
+  --color-card-bg: rgba(10, 10, 20, 0.8);
+  --color-price-good: #2ecc71;
+  --color-stars: #f39c12;
+}
+
+/* Reset e Body */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: Arial, sans-serif;
+  background: linear-gradient(
+    135deg,
+    var(--color-bg-dark),
+    var(--color-bg-mid),
+    var(--color-bg-light)
+  );
+  background-size: 400% 400%;
+  animation: animateGradient 15s ease infinite;
+  color: var(--color-text);
+}
+
+@keyframes animateGradient {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+/* =======================================
+   2. CLASSES UTILITÁRIAS
+   ======================================= */
+
+.subtext {
+  color: #2ecc71;
+}
+
+/* =======================================
+   3. LAYOUT PRINCIPAL DA PÁGINA
+   ======================================= */
+
+.page-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  gap: 2rem;
+  padding: 2rem 1rem; /* Padding que estava no body */
+  max-width: 1200px; /* Largura máxima da página */
+  margin: 0 auto; /* Centraliza o wrapper */
+  flex-wrap: wrap; /* Faz a sidebar ir para baixo em telas pequenas */
+}
+
+/* =======================================
+   4. COMPONENTES: BASE (DRY)
+   ======================================= */
+
+/* Base comum para todos os "cards" */
+.feed-post,
+.platform-carousel,
+.profile-card,
+.sidebar-box {
+  background-color: var(--color-card-bg);
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
+}
+
+/* =======================================
+   5. SEÇÃO DO FEED (COLUNA PRINCIPAL)
+   ======================================= */
+
+/* Container Principal do Feed */
+.feed-container {
+  flex: 1; /* Ocupa o espaço disponível */
+  max-width: 700px;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+/* --- Card de Post Individual --- */
+.feed-post {
+  overflow: hidden;
+}
+
+/* Cabeçalho do Post */
+.post-header {
+  display: flex;
+  align-items: center;
+  padding: 1rem;
+  gap: 1rem;
+}
+.avatar {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  border: 2px solid var(--color-primary-purple);
+}
+.user-info {
+  flex-grow: 1;
+  font-size: 0.95rem;
+}
+.user-info strong {
+  color: #fff;
+  font-size: 1rem;
+  display: block;
+}
+.timestamp {
+  font-size: 0.85rem;
+  color: var(--color-text-muted);
+}
+
+/* Conteúdo do Post */
+.post-content {
+  padding: 0 1.25rem 1.25rem 1.25rem;
+}
+.post-content > p {
+  margin-bottom: 1rem;
+  line-height: 1.6;
+}
+
+/* Rodapé do Post (Ações) */
+.post-footer {
+  display: flex;
+  justify-content: space-around;
+  padding: 0.75rem 1rem;
+  border-top: 1px solid var(--color-border);
+}
+.action-button {
+  background: none;
+  border: none;
+  color: var(--color-text-muted);
+  font-size: 0.9rem;
+  font-weight: bold;
+  cursor: pointer;
+  padding: 0.5rem;
+  border-radius: 5px;
+  transition: background-color 0.3s, color 0.3s;
+}
+.action-button:hover {
+  color: var(--color-primary-purple-light);
+  background-color: rgba(138, 43, 226, 0.1);
+}
+
+/* --- Card de Conquista (Post 1) --- */
+.achievement-card {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  background-color: #1a1a2e;
+  padding: 1rem;
+  border-radius: 5px;
+  border-left: 4px solid var(--color-primary-purple);
+}
+.game-cover-small {
+  width: 60px;
+  height: 80px;
+  object-fit: cover;
+  border-radius: 3px;
+}
+.achievement-card h4 {
+  color: #fff;
+  font-size: 1.1rem;
+}
+.achievement-card p {
+  font-size: 0.9rem;
+  color: var(--color-text-muted);
+}
+.achievement-card span {
+  font-size: 0.8rem;
+  color: var(--color-text-muted);
+  font-style: italic;
+}
+
+/* --- Card de Análise (Post 3) --- */
+.review-card {
+  display: flex;
+  gap: 1rem;
+  background-color: #1a1a2e;
+  padding: 1rem;
+  border-radius: 5px;
+}
+.game-cover-medium {
+  width: 100px;
+  height: auto;
+  object-fit: cover;
+  border-radius: 3px;
+}
+.review-details h3 {
+  color: #fff;
+  margin-bottom: 0.5rem;
+}
+.star-rating {
+  color: var(--color-stars);
+  font-size: 1.2rem;
+  font-weight: bold;
+  margin-bottom: 0.75rem;
+}
+.review-text {
+  font-style: italic;
+  color: #ccc;
+  line-height: 1.5;
+  margin-bottom: 1rem;
+}
+.read-more {
+  color: var(--color-primary-purple-light);
+  text-decoration: none;
+  font-weight: bold;
+  font-size: 0.9rem;
+}
+.read-more:hover {
+  text-decoration: underline;
+}
+
+/* --- Carrossel de Ofertas --- */
+.platform-carousel {
+  padding: 1.25rem;
+}
+.platform-carousel h3 {
+  color: #fff;
+  font-size: 1.3rem;
+  margin-bottom: 1rem;
+  border-bottom: 2px solid var(--color-primary-purple);
+  padding-bottom: 0.5rem;
+}
+.carousel-track {
+  display: flex;
+  overflow-x: auto;
+  overflow-y: hidden;
+  gap: 1rem;
+  padding-bottom: 10px;
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-primary-purple) #1a1a2e;
+}
+.carousel-track::-webkit-scrollbar {
+  height: 8px;
+}
+.carousel-track::-webkit-scrollbar-track {
+  background: #1a1a2e;
+  border-radius: 4px;
+}
+.carousel-track::-webkit-scrollbar-thumb {
+  background-color: var(--color-primary-purple);
+  border-radius: 4px;
+}
+.carousel-track::-webkit-scrollbar-thumb:hover {
+  background-color: var(--color-primary-purple-light);
+}
+
+.carousel-item {
+  flex: 0 0 160px;
+  background-color: #1a1a2e;
+  border-radius: 5px;
+  overflow: hidden;
+  transition: transform 0.3s ease;
+  cursor: pointer;
+}
+.carousel-item:hover {
+  transform: translateY(-5px);
+}
+
+/* --- [NOVO] Classe para o link (tag <a>) do card --- */
+.link-card {
+  text-decoration: none; /* Remove sublinhado */
+  color: inherit;        /* Mantém a cor original do texto */
+  display: block;        /* Ocupa todo o espaço da div pai */
+  height: 100%;
+}
+/* --------------------------------------------------- */
+
+.carousel-item img {
+  width: 100%;
+  height: 200px;
+  object-fit: cover;
+  display: block;
+}
+.item-info {
+  padding: 0.75rem;
+}
+.item-info h4 {
+  color: #fff;
+  font-size: 0.95rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin-bottom: 0.5rem;
+}
+
+/* MUDANÇA NO CSS: 
+   .price agora tem a cor e tamanho padrão.
+   .discount apenas muda a cor.
+*/
+.price {
+  font-weight: bold;
+  display: block;
+  color: var(--color-text); /* Cor padrão (branca) */
+  font-size: 1rem; /* Tamanho padrão */
+}
+.price.original {
+  color: var(--color-text-muted);
+  text-decoration: line-through;
+  font-size: 0.85rem;
+}
+.price.discount {
+  color: var(--color-price-good); /* Cor de desconto (verde) */
+}
+
+/* =======================================
+   6. SEÇÃO DA SIDEBAR (COLUNA LATERAL)
+   ======================================= */
+
+.profile-sidebar {
+  flex-basis: 300px; /* Largura fixa da sidebar */
+  flex-shrink: 0;
+
+  /* Efeito "grudento" */
+  position: sticky;
+  top: 2rem; /* Começa a "grudar" 2rem abaixo do topo */
+}
+
+/* --- Barra de Busca (Sidebar) --- */
+.search-bar {
+  display: flex;
+  align-items: center;
+  background-color: var(--color-bg-light);
+  border: 1px solid var(--color-border);
+  border-radius: 50px; /* Valor alto para garantir formato de pílula */
+  padding: 0.75rem 1rem; /* Padding flexível, removido 450px */
+  margin-bottom: 1.5rem;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.search-bar input[type="text"] {
+  border: none;
+  outline: none;
+  background-color: transparent;
+  flex-grow: 1; /* Ocupa o espaço disponível */
+  font-size: 0.9rem;
+  color: var(--color-text); /* Cor do texto principal */
+  margin-left: 5px;
+}
+
+.search-bar input[type="text"]::placeholder {
+  color: var(--color-text-muted); /* Cor do placeholder */
+}
+
+.search-bar button {
+  border: none;
+  background-color: transparent;
+  cursor: pointer;
+  font-size: 1rem; /* Tamanho do ícone de lupa */
+  color: var(--color-text-muted); /* Cor sutil */
+  padding: 0 5px;
+  transition: color 0.3s ease;
+}
+
+.search-bar button:hover {
+  color: var(--color-primary-purple-light); /* Destaque no hover */
+}
+
+/* --- Card de Perfil (Sidebar) --- */
+.profile-card {
+  text-align: center;
+  overflow: hidden; /* Importante para o banner */
+}
+
+.profile-banner {
+  width: 100%;
+  height: 100px;
+  object-fit: cover;
+}
+
+.profile-avatar {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  border: 4px solid var(--color-primary-purple);
+  margin-top: -40px; /* Puxa o avatar para cima do banner */
+  position: relative; /* Garante que fique por cima */
+}
+
+.profile-name {
+  display: block;
+  color: #fff;
+  font-size: 1.2rem;
+  margin-top: 0.5rem;
+}
+
+.profile-handle {
+  color: var(--color-text-muted);
+  font-size: 0.9rem;
+}
+
+.profile-bio {
+  font-size: 0.9rem;
+  margin: 1rem 1.5rem;
+  line-height: 1.4;
+  color: #ccc;
+}
+
+.profile-stats {
+  display: flex;
+  justify-content: space-around;
+  padding: 0 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.profile-stats div {
+  text-align: center;
+}
+.profile-stats strong {
+  display: block;
+  color: #fff;
+  font-size: 1.1rem;
+}
+.profile-stats span {
+  font-size: 0.8rem;
+  color: var(--color-text-muted);
+}
+
+.profile-button {
+  display: block;
+  width: 100%;
+  padding: 0.8rem;
+  background: none;
+  border: none;
+  border-top: 1px solid var(--color-border);
+  color: var(--color-primary-purple-light);
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.3s, color 0.3s;
+}
+
+.profile-button:hover {
+  background-color: var(--color-primary-purple);
+  color: #fff;
+}
+
+/* --- Caixa de Amigos Online (Sidebar) --- */
+.sidebar-box {
+  margin-top: 1.5rem;
+  padding: 1.25rem;
+}
+
+.sidebar-box h4 {
+  color: #fff;
+  margin-bottom: 1rem;
+  border-bottom: 1px solid var(--color-border);
+  padding-bottom: 0.75rem;
+}
+
+.friend-list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.friend-list li {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.friend-list img {
+  width: 35px;
+  height: 35px;
+  border-radius: 50%;
+}
+
+.friend-list strong {
+  color: #fff;
+  font-size: 0.9rem;
+  display: block;
+}
+.friend-list span {
+  font-size: 0.8rem;
+  color: var(--color-price-good); /* Reutilizando a cor verde */
+}
