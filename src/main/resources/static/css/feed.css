@@ -320,7 +320,6 @@ body {
 }
 .price.original {
   color: var(--color-text-muted);
-  text-decoration: line-through;
   font-size: 0.85rem;
 }
 .price.discount {

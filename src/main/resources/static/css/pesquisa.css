@@ -1,0 +1,238 @@
+body {
+    margin: 0;
+    background-color: #0f172a; 
+    color: white;
+}
+
+/* 1. BARRA DE PESQUISA CENTRALIZADA E MAIOR */
+.search-hero {
+    background: #1a1a2e;
+    padding: 60px 20px; /* Mais espaço vertical */
+    display: flex;
+    flex-direction: column; /* Organiza os itens de cima para baixo */
+    align-items: center; /* Centraliza no meio da tela */
+    justify-content: center;
+    position: relative;
+    border-bottom: 2px solid #e94560;
+}
+
+.back-home {
+    position: absolute;
+    top: 25px;
+    left: 30px;
+    color: #a980ff;
+    text-decoration: none;
+    font-weight: bold;
+    font-size: 1.1em;
+}
+
+.big-search-form {
+    display: flex;
+    gap: 15px;
+    width: 100%;
+    max-width: 800px; /* Limita o tamanho para não esticar demais no PC */
+    margin-top: 15px;
+}
+
+.big-search-form input {
+    flex-grow: 1;
+    padding: 16px 20px; /* Inputs mais gordinhos */
+    border-radius: 10px;
+    border: none;
+    font-size: 1.2em; /* Texto maior */
+}
+
+.search-filter-select {
+    padding: 16px;
+    border-radius: 10px;
+    border: none;
+    background: #2a2a4a;
+    color: white;
+    font-weight: bold;
+    font-size: 1.1em;
+    cursor: pointer;
+}
+
+.big-search-form button {
+    background: #e94560;
+    color: white;
+    border: none;
+    padding: 0 30px;
+    border-radius: 10px;
+    cursor: pointer;
+    font-weight: bold;
+    font-size: 1.2em; /* Botão de busca maior */
+    transition: 0.3s;
+}
+
+.big-search-form button:hover {
+    background: #d63d56;
+}
+
+/* 2. ESTRUTURA DA PÁGINA */
+.page-wrapper-search {
+    padding: 40px 20px;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.results-header {
+    margin-bottom: 40px;
+    text-align: center; /* Centraliza o título "Resultados para..." */
+}
+
+.section-divider {
+    margin-bottom: 50px;
+}
+
+.section-divider h3 {
+    color: #a980ff;
+    margin-bottom: 25px;
+    border-bottom: 1px solid #2a2a4a;
+    padding-bottom: 10px;
+    font-size: 1.5em;
+}
+
+/* 3. GRID DE USUÁRIOS (CARDS CLICÁVEIS) */
+.users-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 25px;
+}
+
+.user-card {
+    background: #16213e;
+    display: flex;
+    flex-direction: column; /* Coloca a foto em cima e o texto embaixo */
+    align-items: center;
+    padding: 30px 20px;
+    border-radius: 12px;
+    color: white;
+    text-decoration: none; /* Tira o sublinhado do link */
+    transition: 0.3s;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+}
+
+.user-card:hover {
+    transform: translateY(-5px); /* Efeito de pular igual aos jogos */
+    box-shadow: 0 10px 25px rgba(0,0,0,0.6);
+    background: #1e2c54;
+}
+
+.user-card img {
+    width: 100px; /* Tamanho da foto contido e perfeito */
+    height: 100px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin-bottom: 15px;
+    border: 3px solid #a980ff; /* Borda estilizada em volta da foto */
+}
+
+.user-card-info {
+    text-align: center;
+}
+
+.user-card h4 {
+    margin: 0 0 8px 0;
+    color: #4ade80;
+    font-size: 1.2em;
+}
+
+.user-card p {
+    margin: 0;
+    font-size: 0.9em;
+    color: #aaa;
+    line-height: 1.4;
+}
+
+/* 4. GRID DE JOGOS E BOTÕES MAIORES */
+.results-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 25px;
+}
+
+.game-card {
+    background: #16213e;
+    border-radius: 12px;
+    overflow: hidden;
+    transition: 0.3s;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+    display: flex;
+    flex-direction: column;
+}
+
+.game-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 25px rgba(0,0,0,0.6);
+}
+
+.card-image img {
+    width: 100%;
+    height: 280px;
+    object-fit: cover;
+}
+
+.card-body {
+    padding: 20px;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+    justify-content: space-between;
+}
+
+.card-body h4 {
+    margin: 0 0 15px 0;
+    font-size: 1.1em;
+    color: white;
+}
+
+.prices {
+    margin-bottom: 15px;
+}
+
+.prices .old {
+    color: #999;
+    font-size: 0.9em;
+    display: block;
+    margin-bottom: 5px;
+}
+
+.prices .new {
+    color: #4ade80;
+    font-weight: bold;
+    font-size: 1.1em;
+    display: block;
+}
+
+/* O BOTÃO MAIOR E CONFORTÁVEL */
+.btn-view {
+    display: block;
+    background: #e94560;
+    color: white;
+    text-decoration: none;
+    padding: 12px; /* Botão mais gordinho (antes era 8px) */
+    border-radius: 8px;
+    font-weight: bold;
+    font-size: 1.1em; /* Fonte maior no botão */
+    transition: 0.3s;
+}
+
+.btn-view:hover {
+    background: #d63d56;
+}
+
+/* CASO NÃO ENCONTRE RESULTADOS */
+.no-results {
+    text-align: center;
+    color: #aaa;
+    margin-top: 50px;
+    font-size: 1.2em;
+}
+
+.no-results i {
+    font-size: 3em;
+    margin-bottom: 15px;
+    color: #e94560;
+}

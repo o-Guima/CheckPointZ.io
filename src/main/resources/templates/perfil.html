@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="pt-br" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${usuario.username} + ' - Perfil CheckPointZ'">Perfil</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" th:href="@{/css/feed.css}">
+    <link rel="stylesheet" th:href="@{/css/perfil.css}">
+</head>
+<body>
+    <nav class="top-nav">
+        <a th:href="@{/feed}" class="back-link"><i class="fas fa-arrow-left"></i> Voltar para o Feed</a>
+        
+        <form action="/pesquisar" method="get" class="search-bar" role="search">
+            <input type="text" name="q" placeholder="Procurar jogos ou usuários...">
+            <button type="submit" aria-label="Buscar"><i class="fas fa-search"></i></button>
+        </form>
+    </nav>
+
+    <div class="profile-container">
+        <div class="profile-header">
+            <div class="banner"></div>
+            <div class="profile-info-main">
+                <img class="avatar-large" th:src="${usuario.fotoPerfil != null && !usuario.fotoPerfil.isEmpty() ? usuario.fotoPerfil : 'https://th.bing.com/th/id/R.4fa196e40b50668e0d732be31bc2dbfe?rik=Xci%2fN2aZPE%2bfAQ&pid=ImgRaw&r=0'}" alt="Foto de Perfil">
+                
+                <div class="user-details">
+                    <h1 th:text="${usuario.username}">Nome de Usuário</h1>
+                    <p class="bio" th:text="${usuario.descricao != null && !usuario.descricao.isEmpty() ? usuario.descricao : 'Nenhuma biografia adicionada ainda.'}">Biografia</p>
+                    
+                    <div class="social-links" th:if="${usuario.plataformasConectaveis != null && !usuario.plataformasConectaveis.isEmpty()}">
+                        <span th:each="plat : ${#strings.arraySplit(usuario.plataformasConectaveis, '###')}">
+                            <a class="platform-badge" th:href="${#strings.arraySplit(plat, '|||')[1]}" target="_blank">
+                                <i class="fas fa-link"></i> <span th:text="${#strings.arraySplit(plat, '|||')[0]}"></span>
+                            </a>
+                        </span>
+                    </div>
+                </div>
+
+                <button class="btn-edit-profile" th:if="${session.usuarioLogado != null and session.usuarioLogado.userId == usuario.userId}" onclick="abrirModalEdicao()">
+                    <i class="fas fa-edit"></i> Editar Perfil
+                </button>
+            </div>
+        </div>
+
+        <div class="highlights-section">
+            <h3><i class="fas fa-trophy"></i> Conquista em Destaque</h3>
+            <div class="highlight-card">
+                <p th:text="${usuario.conquistaDestaque != null && !usuario.conquistaDestaque.isEmpty() ? usuario.conquistaDestaque : 'O usuário ainda não selecionou um destaque.'}">Conquista incrível aqui!</p>
+            </div>
+        </div>
+    </div>
+
+    <div id="modalEdicao" class="modal-overlay">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Editar Perfil</h2>
+                <span class="close-btn" onclick="fecharModalEdicao()">&times;</span>
+            </div>
+            
+            <form th:action="@{/perfil/editar}" method="post" class="edit-form" enctype="multipart/form-data">
+                
+                <div class="form-group">
+                    <label>Nome de Usuário</label>
+                    <input type="text" name="username" th:value="${usuario.username}" required>
+                </div>
+
+                <div class="form-group">
+                    <label>Nova Senha (deixe em branco para manter a atual)</label>
+                    <input type="password" name="senha" placeholder="Digite apenas se quiser alterar">
+                </div>
+
+                <div class="form-group">
+                    <label>Nova Foto de Perfil (PNG, JPG ou JPEG)</label>
+                    <input type="file" name="fotoPerfilArquivo" accept="image/png, image/jpeg, image/jpg">
+                </div>
+
+                <div class="form-group">
+                    <label>Sobre Mim (Biografia)</label>
+                    <textarea name="descricao" rows="4" th:text="${usuario.descricao}" placeholder="Fale sobre seus jogos favoritos..."></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label>Conquista de Destaque</label>
+                    <input type="text" name="conquistaDestaque" th:value="${usuario.conquistaDestaque}" placeholder="Ex: Platina em Elden Ring">
+                </div>
+
+                <div class="form-group" id="container-plataformas">
+                    <label>Links de Conexão (Steam, Xbox, Discord, etc)</label>
+                    <div class="plataforma-row">
+                        <input type="text" name="nomePlataforma" placeholder="Nome (Ex: Steam)" style="width: 35%;">
+                        <input type="text" name="linkPlataforma" placeholder="Link do seu perfil" style="width: 60%;">
+                    </div>
+                </div>
+                <button type="button" class="btn-add-link" onclick="adicionarPlataforma()">+ Adicionar outro link</button>
+
+                <button type="submit" class="btn-save">Salvar Alterações</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        function abrirModalEdicao() {
+            document.getElementById('modalEdicao').style.display = 'flex';
+        }
+        function fecharModalEdicao() {
+            document.getElementById('modalEdicao').style.display = 'none';
+        }
+        window.onclick = function(event) {
+            if (event.target == document.getElementById('modalEdicao')) {
+                fecharModalEdicao();
+            }
+        }
+
+        // LÓGICA ATUALIZADA: Função JavaScript para clonar a linha de inputs
+        function adicionarPlataforma() {
+            const container = document.getElementById('container-plataformas');
+            const novaLinha = document.createElement('div');
+            novaLinha.className = 'plataforma-row';
+            novaLinha.style.marginTop = '10px';
+            novaLinha.innerHTML = `
+                <input type="text" name="nomePlataforma" placeholder="Nome" style="width: 35%;">
+                <input type="text" name="linkPlataforma" placeholder="Link" style="width: 60%;">
+            `;
+            container.appendChild(novaLinha);
+        }
+    </script>
+</body>
+</html>

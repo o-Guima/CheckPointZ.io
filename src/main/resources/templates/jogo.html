@@ -1,124 +1,97 @@
 <!DOCTYPE html>
-<html lang="pt-br">
+<html lang="pt-br" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Detalhes do Jogo - Irupé</title>
-
+    <title th:text="${jogo.nomeJogo} + ' - CheckPointZ'">Detalhes do Jogo</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <link rel="stylesheet" href="./css/jogo.css">
-    
+    <link rel="stylesheet" th:href="@{/css/jogo.css}">
 </head>
 <body>
     <div class="game-container">
         
-        <a href="feed.html" class="back-link">
+        <a th:href="@{/feed}" class="back-link">
             <i class="fas fa-arrow-left"></i> Voltar para a Loja
         </a>
 
-        <!-- CONTAINER UNIFICADO (Galeria + Info) -->
         <div class="game-content-wrapper">
-            
-            <!-- 1. Galeria -->
             <div class="gallery-section">
                 <div class="main-image-container" onclick="openModal()">
                     <div class="zoom-hint"><i class="fas fa-search-plus"></i> Ampliar</div>
-                    <img id="mainImage" src="./images/Irupé Capa.jpg" alt="Arte promocional irapé" onerror="this.src='https://images.unsplash.com/photo-1542751371-adc38448a05e?q=80&w=1200&auto=format&fit=crop'">
+                    <img id="mainImage" th:src="${jogo.fotoJogo}" th:alt="${jogo.nomeJogo}" onerror="this.src='https://images.unsplash.com/photo-1542751371-adc38448a05e?q=80&w=1200&auto=format&fit=crop'">
                 </div>
 
                 <div class="thumbnails-row">
-                    <img class="thumb active" src="./images/Irupé Capa.jpg" onclick="changeImage(this.src)" alt="arte promocional Irupé" onerror="this.src='https://images.unsplash.com/photo-1542751371-adc38448a05e?q=80&w=200&auto=format&fit=crop'">
-                    <img class="thumb" src="./images/Irupé capa2.jpg" onclick="changeImage(this.src)" alt="capa do jogo irupé" onerror="this.src='https://images.unsplash.com/photo-1511512578047-dfb367046420?q=80&w=200&auto=format&fit=crop'">
-                    <img class="thumb" src="./images/Irupé gameplay.jpg" onclick="changeImage(this.src)" alt="Cena do jogo irupé" onerror="this.src='https://images.unsplash.com/photo-1538481199705-c710c4e965fc?q=80&w=200&auto=format&fit=crop'">
+                    <img class="thumb active" th:src="${jogo.fotoJogo}" onclick="changeImage(this.src)" th:alt="${jogo.nomeJogo}">
+                    
+                    <img class="thumb" th:each="img : ${jogo.imagens}" th:src="${img.urlImagem}" onclick="changeImage(this.src)" alt="Screenshot do Jogo">
                 </div>
             </div>
 
-            <!-- 2. Informações e Descrição -->
             <div class="info-section">
-                <!-- info-card é puramente estrutural agora, sem estilo visual próprio -->
                 <div class="info-card">
-                    <h1 class="game-title">Irupé</h1>
+                    <h1 class="game-title" th:text="${jogo.nomeJogo}">Nome do Jogo</h1>
 
-                    <a href="https://www.instagram.com/octon.studio/" target="_blank" class="game-developer-link">
-                        <p>@octon.studio</p>
+                    <a href="#" class="game-developer-link">
+                        <p>@steam.rawg.data</p>
                     </a>
 
                     <div class="platforms-row">
-                        <i class="fab fa-xbox platform-icon" title="Xbox"></i>
-                        <i class="fab fa-playstation platform-icon" title="PlayStation"></i>
-                        <i class="fab fa-steam platform-icon" title="Steam"></i>
+                        <a th:if="${jogo.linkXbox != null}" th:href="${jogo.linkXbox}" target="_blank" style="color: inherit; text-decoration: none;">
+                            <i class="fab fa-xbox platform-icon" title="Comprar no Xbox"></i>
+                        </a>
+                        <a th:if="${jogo.linkPlaystation != null}" th:href="${jogo.linkPlaystation}" target="_blank" style="color: inherit; text-decoration: none;">
+                            <i class="fab fa-playstation platform-icon" title="Comprar no PlayStation"></i>
+                        </a>
+                        <a th:if="${jogo.linkSteam != null}" th:href="${jogo.linkSteam}" target="_blank" style="color: inherit; text-decoration: none;">
+                            <i class="fab fa-steam platform-icon" title="Comprar na Steam"></i>
+                        </a>
                     </div>
 
-                    <div class="tags-container">
-                        <span class="tag">Aventura</span>
-                        <span class="tag">Puzzle</span>
-                        <span class="tag">Indie</span>
-                        <span class="tag">Brasileiro</span>
+                    <div class="tags-container" th:if="${jogo.generos != null}">
+                        <span class="tag" th:each="genero : ${#strings.arraySplit(jogo.generos, ',')}" th:text="${#strings.trim(genero)}">
+                            Aventura
+                        </span>
                     </div>
 
                     <div class="price-container">
-                        <div class="price-tag">
-                            <span class="price-old">R$ 199,90</span>
-                            <span class="price-current">R$ 99,95</span>
-                            <span class="discount-badge">-50%</span>
+                        <div class="price-tag" style="display: flex; flex-direction: column; align-items: flex-start; gap: 5px;">
+<span class="price-old" th:if="${jogo.precosOriginais != null}" th:text="'Valor Base: R$ ' + ${jogo.precosOriginais}" style="font-size: 0.9em; color: #999;"></span>
+                            <span class="price-current" th:if="${jogo.precosPromocoes != null}" th:text="${jogo.lojaPromocao} + ': R$ ' + ${jogo.precosPromocoes}" style="color: #4ade80; font-weight: bold;"></span>
                         </div>
                     </div>
-                    
                     
                     <div class="info-notice">
                         <i class="fas fa-info-circle"></i>
                         <span>Este item está disponível para visualização. Acesse a biblioteca da plataforma para verificar disponibilidade de download.</span>
                     </div>
                 </div>
-                
             </div>
+            
             <div class="game-description">
                 <h3>Sobre o Jogo</h3>
-                <p>
-                    Irupé — Um jogo de plataforma 2D narrativo sobre emoções, memória e a forma como crianças enxergam o mundo.
-                    Em uma jornada sensível e simbólica, você atravessa cenários que revelam medos, desejos e percepções distorcidas, enquanto descobre o que se esconde no silêncio da infância.
-                    Desenvolvido por Octon Studio.
+                <p th:text="${jogo.descricao}">
+                    Carregando dados da API...
                 </p>
             </div>
             
             <div class="developer-showcase">
-                        <span>Desenvolvedora</span>
-                        <img src="./images/logo-octon.jpg" alt="Octon Studio" onerror="this.style.display='none'">
-                    </div>
-            
+                <span>Distribuidora / Estúdio</span>
+                <p style="color: #a980ff; font-weight: bold; margin-top: 5px;" th:text="${jogo.distribuidora}">Nome da Distribuidora</p>
+            </div>
 
-        </div> <!-- Fim do Container Unificado -->
+        </div> 
 
-        <!-- 3. Reviews (Separado) -->
         <div class="reviews-box">
             <div class="reviews-header">
                 <h3>O que estão dizendo</h3>
                 <span class="reviews-rating-summary"><i class="fas fa-star"></i> 4.9/5</span>
             </div>
-
             <div class="review-item">
                 <div class="reviewer-avatar"><i class="fas fa-palette"></i></div>
                 <div class="review-content">
                     <span class="reviewer-name">PixelArtLover</span>
                     <div class="review-stars"><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i></div>
-                    <p class="review-text">"A arte desse jogo está simplesmente incrível! As cores pintadas à mão dão uma vida única ao cenário brasileiro. É um deleite visual."</p>
-                </div>
-            </div>
-
-            <div class="review-item">
-                <div class="reviewer-avatar"><i class="fas fa-gamepad"></i></div>
-                <div class="review-content">
-                    <span class="reviewer-name">IndieFanBR</span>
-                    <div class="review-stars"><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star-half-alt"></i></div>
-                    <p class="review-text">"Joguei a demo no último festival e fiquei apaixonado. A mecânica de pulo é fluida e os puzzles são inteligentes sem serem frustrantes."</p>
-                </div>
-            </div>
-
-            <div class="review-item">
-                <div class="reviewer-avatar"><i class="fas fa-rocket"></i></div>
-                <div class="review-content">
-                    <span class="reviewer-name">HypeTrain2025</span>
-                    <div class="review-stars"><i class="far fa-star"></i><i class="far fa-star"></i><i class="far fa-star"></i><i class="far fa-star"></i><i class="far fa-star"></i></div>
-                    <p class="review-text">"Não vejo a hora de lançar! Já está na minha wishlist há meses. Finalmente um jogo que explora nosso folclore com o respeito que ele merece."</p>
+                    <p class="review-text">"A arte desse jogo está simplesmente incrível! É um deleite visual."</p>
                 </div>
             </div>
         </div>

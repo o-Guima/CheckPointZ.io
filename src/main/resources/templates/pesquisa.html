@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="pt-br" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Pesquisa - CheckPointZ</title>
+    <link rel="stylesheet" th:href="@{/css/feed.css}">
+    <link rel="stylesheet" th:href="@{/css/pesquisa.css}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    
+    <div class="search-hero">
+        <a th:href="@{/feed}" class="back-home"><i class="fas fa-home"></i> Feed</a>
+        <form action="/pesquisar" method="get" class="big-search-form">
+            <input type="text" name="q" th:value="${termoDePesquisa}" placeholder="Buscar jogos, pessoas ou categorias...">
+            <select name="tipo" class="search-filter-select">
+                <option value="todos" th:selected="${tipoBusca == 'todos'}">Tudo</option>
+                <option value="jogos" th:selected="${tipoBusca == 'jogos'}">Jogos</option>
+                <option value="perfis" th:selected="${tipoBusca == 'perfis'}">Perfis</option>
+            </select>
+            <button type="submit"><i class="fas fa-search"></i> Buscar</button>
+        </form>
+    </div>
+
+    <div class="page-wrapper-search">
+        <main class="search-results">
+            
+            <header class="results-header">
+                <h2 th:if="${termoDePesquisa != null && !termoDePesquisa.isEmpty()}">
+                    Resultados para: <span style="color: #e94560;" th:text="'&quot;' + ${termoDePesquisa} + '&quot;'"></span>
+                </h2>
+                <h2 th:if="${termoDePesquisa == null || termoDePesquisa.isEmpty()}">
+                    Explorar Checkpointz
+                </h2>
+            </header>
+
+            <div th:if="${usuariosPesquisa != null && !usuariosPesquisa.isEmpty()}" class="section-divider">
+                <h3><i class="fas fa-users"></i> Perfis Encontrados</h3>
+                <div class="users-grid">
+                    <a th:href="@{/perfil/{username}(username=${u.username})}" class="user-card" th:each="u : ${usuariosPesquisa}">
+                        <img th:src="${u.fotoPerfil != null && !u.fotoPerfil.isEmpty() ? u.fotoPerfil : 'https://th.bing.com/th/id/R.4fa196e40b50668e0d732be31bc2dbfe?rik=Xci%2fN2aZPE%2bfAQ&pid=ImgRaw&r=0'}" alt="Foto de Perfil">
+                        <div class="user-card-info">
+                            <h4 th:text="${u.username}">Nome</h4>
+                            <p th:text="${u.conquistaDestaque != null && !u.conquistaDestaque.isEmpty() ? u.conquistaDestaque : 'Gamer'}"></p>
+                        </div>
+                    </a>
+                </div>
+            </div>
+
+            <div th:if="${jogos != null && !jogos.isEmpty()}" class="section-divider">
+                <h3><i class="fas fa-gamepad"></i> Jogos Encontrados</h3>
+                <div class="results-grid">
+                    <div class="game-card" th:each="jogo : ${jogos}">
+                        <div class="card-image">
+                            <img th:src="${jogo.fotoJogo}" alt="Capa">
+                        </div>
+                        <div class="card-body">
+                            <h4 th:text="${jogo.nomeJogo}">Nome</h4>
+                            <div class="prices">
+                                <span class="old" th:if="${jogo.precosOriginais != null}" th:text="'Valor Base: R$ ' + ${jogo.precosOriginais}"></span>
+                                <span class="new" th:if="${jogo.precosPromocoes != null}" th:text="${(jogo.lojaPromocao != null ? jogo.lojaPromocao : 'Oferta') + ': R$ ' + jogo.precosPromocoes}"></span>
+                            </div>
+                            <a th:href="@{/jogo/{nomeJogo}(nomeJogo=${jogo.nomeJogo})}" class="btn-view">Ver Detalhes</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div th:if="${(jogos == null || jogos.isEmpty()) && (usuariosPesquisa == null || usuariosPesquisa.isEmpty())}" class="no-results">
+                <i class="fas fa-ghost"></i>
+                <p>Nenhum resultado encontrado. Tente outros termos!</p>
+            </div>
+
+        </main>
+    </div>
+</body>
+</html>
