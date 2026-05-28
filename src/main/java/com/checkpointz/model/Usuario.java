@@ -60,4 +60,30 @@ public class Usuario {
 
     public String getPlataformasConectaveis() { return plataformasConectaveis; }
     public void setPlataformasConectaveis(String plataformasConectaveis) { this.plataformasConectaveis = plataformasConectaveis; }
+
+  // --- SISTEMA DE CONEXÕES (Apontando para a tabela 'conexoes') ---
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(
+        name = "conexoes", 
+        joinColumns = @JoinColumn(name = "seguidorId"), // A pessoa que clicou em conectar
+        inverseJoinColumns = @JoinColumn(name = "seguidoId") // O perfil que ela visitou
+    )
+    private java.util.List<Usuario> amigos;
+
+    // Adicione os Getters e Setters dos amigos lá no final do arquivo:
+    public java.util.List<Usuario> getAmigos() { return amigos; }
+    public void setAmigos(java.util.List<Usuario> amigos) { this.amigos = amigos; }
+
+    @Column(name = "verificado", columnDefinition = "boolean default false")
+    private boolean verificado = false;
+
+    @Column(name = "tokenVerificacao")
+    private String tokenVerificacao;
+
+    // Adicione os Getters e Setters correspondentes no final do ficheiro:
+    public boolean isVerificado() { return verificado; }
+    public void setVerificado(boolean verificado) { this.verificado = verificado; }
+
+    public String getTokenVerificacao() { return tokenVerificacao; }
+    public void setTokenVerificacao(String tokenVerificacao) { this.tokenVerificacao = tokenVerificacao; }
 }

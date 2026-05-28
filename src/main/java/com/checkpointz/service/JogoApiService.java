@@ -13,6 +13,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.beans.factory.annotation.Value;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -27,8 +28,14 @@ public class JogoApiService {
     @Autowired
     private JogoApiRepository jogoApiRepository;
 
-    private final String GGDEALS_API_KEY = "dV2KjjDlAnB6qqqYZumlp-vBcjmbUV4t";
-    private final String RAWG_API_KEY = "cc435c25d6f44395b75cbf6a6792887e";
+    @Value("${api.ggdeals.key}")
+    private String GGDEALS_API_KEY;
+
+    @Value("${api.rawg.key}")
+    private String RAWG_API_KEY;
+
+    @Value("${api.steam.key}")
+    private String STEAM_API_KEY;
 
     private List<String> idsParaProcessar = new ArrayList<>();
     private int indiceAtual = 0;
@@ -39,8 +46,8 @@ public class JogoApiService {
             System.out.println("A iniciar a transferência da lista da Steam...");
             RestTemplate restTemplate = new RestTemplate();
             
-            String steamKey = "F06F08CFB13807410C21ADF40241A7BB";
-            String steamUrl = "https://api.steampowered.com/IStoreService/GetAppList/v1/?key=" + steamKey + "&max_results=50000";
+     
+            String steamUrl = "https://api.steampowered.com/IStoreService/GetAppList/v1/?key=" + STEAM_API_KEY + "&max_results=50000";
             
             JsonNode root = restTemplate.getForObject(steamUrl, JsonNode.class);
             
@@ -67,9 +74,8 @@ public class JogoApiService {
             
             boolean precisaAtualizar = false;
             
-            // 1. Limpeza do "Lixo" do passado (O Bug que você encontrou!)
+            // 1. Limpeza do "Lixo" do passado
             if (j.getPrecosPromocoes() != null && j.getPrecosOriginais() != null) {
-                // Se a "promoção" for maior ou igual ao preço base, anula a promoção!
                 if (j.getPrecosPromocoes().compareTo(j.getPrecosOriginais()) >= 0) {
                     j.setPrecosPromocoes(null);
                     j.setLojaPromocao(null);
@@ -132,38 +138,44 @@ public class JogoApiService {
                     String steamAppId = campo.getKey();
                     String nomeDoJogo = jogoGg.path("title").asText();
                     
+                    // =========================================================================
+                    // 🛡️ A TRAVA DE SEGURANÇA (Onde deve estar):
+                    // Se o jogo existe, damos "continue" para pular a criação e salvar duplicado.
+                    // =========================================================================
+                    if (jogoApiRepository.existsByNomeJogo(nomeDoJogo)) {
+                        System.out.println("⚠️ O jogo '" + nomeDoJogo + "' já existe. Pulando...");
+                        continue; 
+                    }
+
                     BigDecimal precoOficialSteam = BigDecimal.valueOf(jogoGg.path("prices").path("currentRetail").asDouble(0.0));
                     BigDecimal precoMercadoCinza = BigDecimal.valueOf(jogoGg.path("prices").path("currentKeyshops").asDouble(0.0));
                     
-                    // A LÓGICA CORRIGIDA:
                     BigDecimal precoBase = precoOficialSteam; 
-                    BigDecimal precoVencedor = null; // Começa como nulo (sem promoção)
+                    BigDecimal precoVencedor = null; 
                     String lojaVencedora = null;
 
-                    // SÓ EXISTE PROMOÇÃO SE O MERCADO CINZA FOR *MENOR* QUE A STEAM OFICIAL
                     if (precoMercadoCinza.compareTo(BigDecimal.ZERO) > 0 && precoMercadoCinza.compareTo(precoOficialSteam) < 0) {
                         precoVencedor = precoMercadoCinza;
                         lojaVencedora = "Keyshops";
                     }
 
-                    JogoApi jogoExistente = jogoApiRepository.findFirstByNomeJogoIgnoreCase(nomeDoJogo);
-                    JogoApi jogoParaSalvar = (jogoExistente != null) ? jogoExistente : new JogoApi();
-
+                    // Se passou pela trava, criamos o jogo:
+                    JogoApi jogoParaSalvar = new JogoApi();
                     jogoParaSalvar.setNomeJogo(nomeDoJogo);
                     jogoParaSalvar.setPrecosOriginais(precoBase);
-                    jogoParaSalvar.setPrecosPromocoes(precoVencedor); // Agora sim, fica NULL se não houver promoção!
+                    jogoParaSalvar.setPrecosPromocoes(precoVencedor);
                     jogoParaSalvar.setLojaPromocao(lojaVencedora);
 
-                    if (jogoParaSalvar.getLinkSteam() == null) {
-                        jogoParaSalvar.setLinkSteam("https://store.steampowered.com/app/" + steamAppId);
-                        jogoParaSalvar.setLinkXbox("https://www.xbox.com/pt-BR/Search?q=" + nomeDoJogo.replace(" ", "+"));
-                        jogoParaSalvar.setLinkPlaystation("https://store.playstation.com/pt-br/search/" + nomeDoJogo.replace(" ", "%20"));
-                    }
+                    jogoParaSalvar.setLinkSteam("https://store.steampowered.com/app/" + steamAppId);
+                    jogoParaSalvar.setLinkXbox("https://www.xbox.com/pt-BR/Search?q=" + nomeDoJogo.replace(" ", "+"));
+                    jogoParaSalvar.setLinkPlaystation("https://store.playstation.com/pt-br/search/" + nomeDoJogo.replace(" ", "%20"));
 
                     buscarDetalhesCompletosDaRawg(jogoParaSalvar, restTemplate);
 
                     if (jogoParaSalvar.getDistribuidora() != null) {
-                        jogoApiRepository.save(jogoParaSalvar);
+                        // saveAndFlush garante que a gravação é imediata, 
+                        // evitando que o próximo loop não veja o que acabou de ser salvo.
+                        jogoApiRepository.saveAndFlush(jogoParaSalvar);
                     }
                 }
             }

@@ -12,89 +12,71 @@
 
         <main class="feed-container">
 
-            <article class="feed-post">
-                <header class="post-header">
-                    <img src="https://i.pinimg.com/originals/a3/2f/ff/a32ffff83e87bf93dd662049ec5f9bb2.jpg" alt="Avatar do Usuário" class="avatar">
-                    <div class="user-info">
-                        <strong>Anjinho</strong> <span class="subtext">compartilhou uma conquista</span>
-                    </div>
-                    <span class="timestamp">2h atrás</span>
-                </header>
-                
-                <div class="post-content">
-                    <p>Finalmente! 100% em Elden Ring. Que jornada!</p>
-                    <div class="achievement-card">
-                        <img src="https://i.playground.ru/e/jdiPejRc_VfyKyXNKHX9UQ.jpeg" alt="Capa de Elden Ring" class="game-cover-small">
-                        <div>
-                            <h4>Senhor Prístino</h4>
-                            <p>Desbloqueou todas as conquistas.</p>
-                            <span>Elden Ring</span>
-                        </div>
-                    </div>
-                </div>
-
-                <footer class="post-footer">
-                    <button class="action-button">Gostei</button>
-                    <button class="action-button">Comentar</button>
-                    <button class="action-button">Compartilhar</button>
-                </footer>
-            </article>
-
+            <!-- CARROSSEL DE OFERTAS COM CÁLCULO DE DESCONTO -->
             <section class="platform-carousel">
                 <h3>🔥 Ofertas Imperdíveis</h3>
                 <div class="carousel-track">
                     <div class="carousel-item" th:each="jogo : ${ofertas}">
-                        <a th:href="@{/jogo/{nomeJogo}(nomeJogo=${jogo.nomeJogo})}" class="link-card" style="text-decoration: none; color: inherit;">
-                            <img th:src="${jogo.fotoJogo}" th:alt="${jogo.nomeJogo}">
-                            <div class="item-info">
-                                <h4 th:text="${jogo.nomeJogo}">Nome do Jogo</h4>
-                                <span class="price original" th:if="${jogo.precosOriginais != null}" th:text="'Valor Base: R$ ' + ${jogo.precosOriginais}" style="display:block; font-size: 0.85em; color: #aaa;"></span>
-                                <span class="price discount" th:if="${jogo.precosPromocoes != null}" th:text="${jogo.lojaPromocao} + ': R$ ' + ${jogo.precosPromocoes}" style="display:block; color: #4ade80; font-weight: bold; margin-top: 3px;"></span>
+                        <a th:href="@{/jogo/{nomeJogo}(nomeJogo=${jogo.nomeJogo})}" class="link-card" style="text-decoration: none; color: inherit; position: relative; display: block;">
+                            <img th:src="${jogo.fotoJogo}" th:alt="${jogo.nomeJogo}" style="width: 100%; border-radius: 8px 8px 0 0;">
+                            
+                            <div style="position: absolute; top: 10px; right: 10px; background: #4ade80; color: #1a1a2e; font-weight: bold; padding: 5px 10px; border-radius: 5px; font-size: 0.9em; box-shadow: 0 4px 6px rgba(0,0,0,0.3);" 
+                                 th:text="'-' + ${#numbers.formatDecimal(((jogo.precosOriginais - jogo.precosPromocoes) * 100 / jogo.precosOriginais), 0, 0)} + '%'">
+                            </div>
+
+                            <div class="item-info" style="padding: 10px;">
+                                <h4 th:text="${jogo.nomeJogo}" style="margin: 0 0 10px 0; font-size: 1.1em; color: white;">Nome do Jogo</h4>
+                                <span class="price original" th:if="${jogo.precosOriginais != null}" th:text="'De: R$ ' + ${jogo.precosOriginais}" style="display:block; font-size: 0.85em; color: #aaa; text-decoration: line-through;"></span>
+                                <span class="price discount" th:if="${jogo.precosPromocoes != null}" th:text="${(jogo.lojaPromocao != null ? jogo.lojaPromocao : 'Oferta')} + ': R$ ' + ${jogo.precosPromocoes}" style="display:block; color: #4ade80; font-weight: bold; margin-top: 3px;"></span>
                             </div>
                         </a>
                     </div>
                 </div>
             </section>
 
-            <article class="feed-post">
-                <header class="post-header">
-                    <img src="https://tse1.mm.bing.net/th/id/OIP.WPstRGnM8CLh-jKemf1vGAHaHa?rs=1&pid=ImgDetMain&o=7&rm=3" alt="Avatar do Usuário" class="avatar">
+            <!-- RENDERIZAÇÃO DOS POSTS GLOBAIS REAIS (FEED DA COMUNIDADE) -->
+            <article class="feed-post" th:each="post : ${feedPosts}" style="background: #1a1a2e; border: 1px solid #2a2a4a; border-radius: 12px; padding: 20px; margin-bottom: 20px; margin-top: 25px;">
+                <header class="post-header" style="display: flex; align-items: center; gap: 15px; margin-bottom: 15px; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 15px;">
+                    <img th:src="${post.usuario.fotoPerfil != null && !post.usuario.fotoPerfil.isEmpty() ? post.usuario.fotoPerfil : 'https://th.bing.com/th/id/R.4fa196e40b50668e0d732be31bc2dbfe?rik=Xci%2fN2aZPE%2bfAQ&pid=ImgRaw&r=0'}" style="width: 50px; height: 50px; border-radius: 50%; object-fit: cover;">
                     <div class="user-info">
-                        <strong>C0gumelol</strong> <span class="subtext">fez uma análise</span>
+                        <strong style="color: #fff; font-size: 1.1em; display: block;">
+                            <a th:href="@{/perfil/{username}(username=${post.usuario.username})}" th:text="${post.usuario.username}" style="color: white; text-decoration: none;"></a>
+                        </strong> 
+                        
+                        <!-- DATA E HORA -->
+                        <span class="timestamp" th:text="${#temporals.format(post.data, 'dd/MM/yyyy')} + ' às ' + ${#temporals.format(post.hora, 'HH:mm')}" style="color: #aaa; font-size: 0.85em;"></span>
+
+                        <span class="subtext" th:if="${post.jogoVinculado != null}" style="display: block; margin-top: 5px;">falou sobre <b style="color:#a980ff; background: rgba(169,128,255,0.1); padding: 2px 8px; border-radius: 10px;" th:text="${post.jogoVinculado.nomeJogo}">Jogo</b></span>
                     </div>
-                    <span class="timestamp">1 dia atrás</span>
                 </header>
                 
                 <div class="post-content">
-                    <div class="review-card">
-                        <img src="https://tse2.mm.bing.net/th/id/OIP.cl14bGHNqjePDMcf3xr5_gHaKT?cb=ucfimg2ucfimg=1&rs=1&pid=ImgDetMain&o=7&rm=3" alt="Capa de Starfield" class="game-cover-medium">
-                        <div class="review-details">
-                            <h3>Análise: Starfield</h3>
-                            <div class="star-rating">
-                                ★★★★☆ (4/5)
-                            </div>
-                            <p class="review-text">"Um universo vasto e cheio de promessas. Embora tenha alguns bugs de lançamento..."</p>
-                            <a href="#" class="read-more">Ler análise completa</a>
-                        </div>
-                    </div>
+                    <p th:text="${post.texto}" style="color: #ccc; line-height: 1.5;"></p>
+                    <img th:if="${post.imagemUrl != null}" th:src="${post.imagemUrl}" style="width: 100%; border-radius: 10px; margin-top: 15px; max-height: 400px; object-fit: cover;">
                 </div>
 
-                <footer class="post-footer">
-                    <button id="botaogostei" class="action-button">Gostei</button>
-                    <button id="botaocomentario" class="action-button">Comentar</button>
-                    <button id="botaocompartilhar" class="action-button">Compartilhar</button>
+                <!-- BOTÕES DE REAÇÃO (AJAX) -->
+                <footer class="post-footer" style="display: flex; gap: 15px; margin-top: 15px; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 15px;">
+                    <button type="button" th:onclick="|reagirPostagem(${post.idPost}, 'gostei', this)|" style="background: transparent; border: 1px solid #4ade80; color: #4ade80; padding: 6px 15px; border-radius: 20px; cursor: pointer; font-weight: bold; transition: 0.3s;">
+                        <i class="fas fa-thumbs-up"></i> Gostei (<span th:text="${post.reacaoGostei}"></span>)
+                    </button>
+
+                    <button type="button" th:onclick="|reagirPostagem(${post.idPost}, 'desgostei', this)|" style="background: transparent; border: 1px solid #e94560; color: #e94560; padding: 6px 15px; border-radius: 20px; cursor: pointer; font-weight: bold; transition: 0.3s;">
+                        <i class="fas fa-thumbs-down"></i> Não Gostei (<span th:text="${post.reacaoDesgostei}"></span>)
+                    </button>
                 </footer>
             </article>
 
-            <section class="platform-carousel">
-                <h3>🚀 Jogos em Alta</h3>
+            <!-- CARROSSEL DE JOGOS EM ALTA -->
+            <section class="platform-carousel" style="margin-top: 30px;">
+                <h3>🚀 Jogos aleatórios para experimentar</h3>
                 <div class="carousel-track">
                     <div class="carousel-item" th:each="jogo : ${emAlta}">
                         <a th:href="@{/jogo/{nomeJogo}(nomeJogo=${jogo.nomeJogo})}" class="link-card" style="text-decoration: none; color: inherit;">
                             <img th:src="${jogo.fotoJogo}" th:alt="${jogo.nomeJogo}">
                             <div class="item-info">
                                 <h4 th:text="${jogo.nomeJogo}">Nome do Jogo</h4>
-                                <span class="price original" th:if="${jogo.precosPromocoes != null}" th:text="'R$ ' + ${jogo.precosPromocoes}"></span>
+                                <span class="price original" th:if="${jogo.precosOriginais != null}" th:text="'Valor: R$ ' + ${jogo.precosOriginais}" style="display:block; font-size: 0.9em; color: #aaa;"></span>
                             </div>
                         </a>
                     </div>
@@ -103,8 +85,8 @@
 
         </main> 
         
+        <!-- BARRA LATERAL -->
         <aside class="profile-sidebar">
-            
             <form action="/pesquisar" method="get" class="search-bar" role="search">
                 <input type="text" name="q" placeholder="Buscar jogos em CheckPointZ...">
                 <button type="submit" aria-label="Buscar">🔍</button>
@@ -112,50 +94,71 @@
             
             <div class="profile-card">
                 <img class="profile-banner" src="https://cdn.wallpapersafari.com/63/56/JDEoMt.jpeg" alt="Banner do Perfil">
+                <img class="profile-avatar" th:src="${usuarioLogado.fotoPerfil != null && !usuarioLogado.fotoPerfil.isEmpty() ? usuarioLogado.fotoPerfil : 'https://th.bing.com/th/id/R.4fa196e40b50668e0d732be31bc2dbfe?rik=Xci%2fN2aZPE%2bfAQ&pid=ImgRaw&r=0'}" alt="Avatar do Utilizador">
                 
-                <img class="profile-avatar" th:src="${usuarioLogado.fotoPerfil != null && !usuarioLogado.fotoPerfil.isEmpty() ? usuarioLogado.fotoPerfil : 'https://th.bing.com/th/id/R.4fa196e40b50668e0d732be31bc2dbfe?rik=Xci%2fN2aZPE%2bfAQ&pid=ImgRaw&r=0'}" alt="Avatar do Usuário">
+                <strong class="profile-name" th:text="${usuarioLogado.username}">Nome</strong>
+                <span class="profile-handle" th:text="'@' + ${usuarioLogado.username}">@handle</span>
                 
-                <strong class="profile-name" th:text="${usuarioLogado.username}">Death_kId</strong>
-                <span class="profile-handle" th:text="'@' + ${usuarioLogado.username}">@deathkid123</span>
-                
-                <p class="profile-bio" th:text="${usuarioLogado.descricao != null && !usuarioLogado.descricao.isEmpty() ? usuarioLogado.descricao : 'Amante de RPGs e jogos indie. Buscando o 100% em todos os jogos!'}"></p>
+                <p class="profile-bio" th:text="${usuarioLogado.descricao != null && !usuarioLogado.descricao.isEmpty() ? usuarioLogado.descricao : 'Adicione uma biografia editando o seu perfil!'}"></p>
 
                 <div class="profile-stats">
                     <div>
-                        <strong>112</strong>
-                        <span>Seguindo</span>
-                    </div>
-                    <div>
-                        <strong>345</strong>
-                        <span>Seguidores</span>
+                        <strong th:text="${usuarioLogado.amigos != null ? usuarioLogado.amigos.size() : 0}">0</strong>
+                        <span>Conexões</span>
                     </div>
                 </div>
                 
                 <a th:href="@{/perfil}" class="profile-button" style="display:block; text-align:center; text-decoration:none; box-sizing: border-box;">Ver e Editar Perfil</a>
             </div>
             
+            <!-- LISTA REAL DE AMIGOS CONECTADOS -->
             <div class="sidebar-box">
-                <h4>Amigos Online (2)</h4>
-                <ul class="friend-list">
-                    <li>
-                        <img src="https://i.pinimg.com/originals/a3/2f/ff/a32ffff83e87bf93dd662049ec5f9bb2.jpg" alt="Avatar Amigo">
+                <h4>As suas Conexões (<span th:text="${usuarioLogado.amigos != null ? usuarioLogado.amigos.size() : 0}"></span>)</h4>
+                
+                <ul class="friend-list" th:if="${usuarioLogado.amigos != null && !usuarioLogado.amigos.isEmpty()}">
+                    <li th:each="amigo : ${usuarioLogado.amigos}">
+                        <img th:src="${amigo.fotoPerfil != null && !amigo.fotoPerfil.isEmpty() ? amigo.fotoPerfil : 'https://th.bing.com/th/id/R.4fa196e40b50668e0d732be31bc2dbfe?rik=Xci%2fN2aZPE%2bfAQ&pid=ImgRaw&r=0'}">
                         <div>
-                            <strong>Anjinho</strong>
-                            <span>Em Elden Ring</span>
-                        </div>
-                    </li>
-                    <li>
-                        <img src="https://tse1.mm.bing.net/th/id/OIP.WPstRGnM8CLh-jKemf1vGAHaHa?rs=1&pid=ImgDetMain&o=7&rm=3" alt="Avatar Amigo">
-                        <div>
-                            <strong>C0gumelol</strong>
-                            <span>Navegando</span>
+                            <strong><a th:href="@{/perfil/{username}(username=${amigo.username})}" th:text="${amigo.username}" style="color: white; text-decoration: none;"></a></strong>
                         </div>
                     </li>
                 </ul>
+                
+                <p th:if="${usuarioLogado.amigos == null || usuarioLogado.amigos.isEmpty()}" style="color: #aaa; font-size: 0.9em; text-align: center; margin-top: 15px;">
+                    Ainda não possui conexões.
+                </p>
             </div>
-
         </aside>
-        
     </div>
+
+    <!-- SCRIPT AJAX PARA REAÇÕES -->
+    <script>
+        function reagirPostagem(postId, tipo, botaoApertado) {
+            const formData = new FormData();
+            formData.append('tipo', tipo);
+
+            fetch(`/post/${postId}/reagir`, {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                const spanContador = botaoApertado.querySelector('span');
+                
+                if (tipo === 'gostei') {
+                    spanContador.innerText = data.gostei;
+                    botaoApertado.style.backgroundColor = 'rgba(74, 222, 128, 0.2)';
+                } else {
+                    spanContador.innerText = data.desgostei;
+                    botaoApertado.style.backgroundColor = 'rgba(233, 69, 96, 0.2)';
+                }
+                
+                setTimeout(() => {
+                    botaoApertado.style.backgroundColor = 'transparent';
+                }, 300);
+            })
+            .catch(erro => console.error('Erro ao registrar a reação:', erro));
+        }
+    </script>
 </body>
 </html>

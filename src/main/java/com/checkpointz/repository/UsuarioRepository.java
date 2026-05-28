@@ -14,4 +14,7 @@ public interface UsuarioRepository extends JpaRepository<Usuario, Integer> {
 
     Usuario findByUsername(String username);
 
+    // Adicione esta linha no seu UsuarioRepository
+    Usuario findByTokenVerificacao(String tokenVerificacao);
+
 }

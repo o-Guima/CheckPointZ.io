@@ -1,6 +1,10 @@
 package com.checkpointz.controller;
 
+import com.checkpointz.model.JogoApi;
+import com.checkpointz.model.Post;
 import com.checkpointz.model.Usuario;
+import com.checkpointz.repository.JogoApiRepository;
+import com.checkpointz.repository.PostRepository;
 import com.checkpointz.repository.UsuarioRepository;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Base64;
 import java.util.List;
 
@@ -22,6 +27,13 @@ public class PerfilController {
     @Autowired
     private UsuarioRepository usuarioRepository;
 
+    @Autowired
+    private PostRepository postRepository;
+
+    @Autowired
+    private JogoApiRepository jogoApiRepository;
+
+    // --- 1. EXIBIR O PRÓPRIO PERFIL ---
     @GetMapping("/perfil")
     public String exibirPerfil(HttpSession session, Model model) {
         Usuario usuarioSessao = (Usuario) session.getAttribute("usuarioLogado");
@@ -29,30 +41,49 @@ public class PerfilController {
 
         Usuario usuarioAtualizado = usuarioRepository.findById(usuarioSessao.getUserId()).orElse(null);
         model.addAttribute("usuario", usuarioAtualizado);
+
+        if (usuarioAtualizado != null) {
+            List<Post> meusPosts = postRepository.findByUsuario_UserIdOrderByDataCriacaoDesc(usuarioAtualizado.getUserId());
+            model.addAttribute("postsUsuario", meusPosts);
+        }
+
+        // NOVO: Busca todos os jogos para preencher a lista (Dropdown) de vinculação
+        List<JogoApi> todosJogos = jogoApiRepository.findAll();
+        model.addAttribute("todosJogos", todosJogos);
         
         return "perfil";
     }
+
+    // --- 2. EXIBIR O PERFIL DE OUTRA PESSOA ---
     @GetMapping("/perfil/{username}")
     public String verPerfilPublico(@PathVariable String username, HttpSession session, Model model) {
-        
         Usuario usuarioSessao = (Usuario) session.getAttribute("usuarioLogado");
         if (usuarioSessao == null) return "redirect:/index.html";
 
-        // Busca o usuário pesquisado no banco de dados
         Usuario usuarioPerfil = usuarioRepository.findByUsername(username);
-        
-        // Se digitar um nome que não existe, volta para a pesquisa
-        if (usuarioPerfil == null) {
-            return "redirect:/pesquisar"; 
-        }
+        if (usuarioPerfil == null) return "redirect:/pesquisar"; 
 
-        // Manda o usuário pesquisado para a tela
         model.addAttribute("usuario", usuarioPerfil);
+
+        boolean jaConectado = false;
+        Usuario eu = usuarioRepository.findById(usuarioSessao.getUserId()).orElse(null);
+        if (eu != null && eu.getAmigos() != null) {
+            jaConectado = eu.getAmigos().stream().anyMatch(amigo -> amigo.getUserId().equals(usuarioPerfil.getUserId()));
+        }
+        model.addAttribute("jaConectado", jaConectado);
+
+        List<Post> postsDoUsuario = postRepository.findByUsuario_UserIdOrderByDataCriacaoDesc(usuarioPerfil.getUserId());
+        model.addAttribute("postsUsuario", postsDoUsuario);
+
+        // Preenche a lista de jogos caso haja interação futura
+        List<JogoApi> todosJogos = jogoApiRepository.findAll();
+        model.addAttribute("todosJogos", todosJogos);
         
-        return "perfil"; // Reutilizamos a mesma tela HTML bonita que já criamos!
+        return "perfil";
     }
 
-   @PostMapping("/perfil/editar")
+    // --- 3. SALVAR EDIÇÃO DO PERFIL ---
+    @PostMapping("/perfil/editar")
     public String salvarEdicaoPerfil(
             @RequestParam("username") String username,
             @RequestParam(value = "senha", required = false) String senha,
@@ -64,7 +95,7 @@ public class PerfilController {
             HttpSession session) {
 
         Usuario usuarioSessao = (Usuario) session.getAttribute("usuarioLogado");
-        if (usuarioSessao == null) return "redirect:/index.html";
+        if (usuarioSessao == null) return "redirect:/index";
 
         Usuario usuarioBanco = usuarioRepository.findById(usuarioSessao.getUserId()).orElse(null);
 
@@ -75,34 +106,27 @@ public class PerfilController {
                 usuarioBanco.setSenha(senha);
             }
 
-            // [LÓGICA DA FOTO MANTIDA IGUAL AO PASSO ANTERIOR AQUI...]
             if (fotoPerfilArquivo != null && !fotoPerfilArquivo.isEmpty()) {
                 try {
-                    String pastaUploads = "src/main/resources/static/uploads/";
-                    java.nio.file.Path caminhoPasta = java.nio.file.Paths.get(pastaUploads);
-                    if (!java.nio.file.Files.exists(caminhoPasta)) {
-                        java.nio.file.Files.createDirectories(caminhoPasta);
-                    }
-                    String nomeArquivoUnico = java.util.UUID.randomUUID().toString() + "_" + fotoPerfilArquivo.getOriginalFilename();
-                    java.nio.file.Path caminhoArquivo = caminhoPasta.resolve(nomeArquivoUnico);
-                    fotoPerfilArquivo.transferTo(caminhoArquivo.toFile());
-                    usuarioBanco.setFotoPerfil("/uploads/" + nomeArquivoUnico);
+                    byte[] bytesImagem = fotoPerfilArquivo.getBytes();
+                    String base64Imagem = Base64.getEncoder().encodeToString(bytesImagem);
+                    String tipoConteudo = fotoPerfilArquivo.getContentType();
+                    String imagemFormatada = "data:" + tipoConteudo + ";base64," + base64Imagem;
+                    usuarioBanco.setFotoPerfil(imagemFormatada);
                 } catch (IOException e) {
-                    System.out.println("Erro: " + e.getMessage());
+                    System.out.println("Erro ao converter a imagem para Base64: " + e.getMessage());
                 }
             }
 
             usuarioBanco.setDescricao(descricao);
             usuarioBanco.setConquistaDestaque(conquistaDestaque);
 
-            // --- NOVA LÓGICA DE MÚLTIPLAS PLATAFORMAS ---
             StringBuilder plataformasConstruidas = new StringBuilder();
             if (nomesPlataformas != null && linksPlataformas != null) {
                 for (int i = 0; i < nomesPlataformas.size(); i++) {
                     String nome = nomesPlataformas.get(i).trim();
                     String link = linksPlataformas.get(i).trim();
                     if (!nome.isEmpty() && !link.isEmpty()) {
-                        // Salva no formato: Nome|||Link###Nome|||Link
                         plataformasConstruidas.append(nome).append("|||").append(link).append("###");
                     }
                 }
@@ -112,7 +136,79 @@ public class PerfilController {
             usuarioRepository.save(usuarioBanco);
             session.setAttribute("usuarioLogado", usuarioBanco);
         }
-
         return "redirect:/perfil";
+    }
+
+    // --- 4. CRIAR UMA NOVA PUBLICAÇÃO (POST) ---
+    @PostMapping("/post/novo")
+    public String criarPost(@RequestParam("texto") String texto,
+                            @RequestParam(value = "imagemArquivo", required = false) MultipartFile imagemArquivo,
+                            @RequestParam(value = "nomeJogoVinculado", required = false) String nomeJogoVinculado,
+                            HttpSession session) {
+        
+        try {
+            Usuario usuarioSessao = (Usuario) session.getAttribute("usuarioLogado");
+            if (usuarioSessao == null) return "redirect:/index.html";
+
+            Usuario eu = usuarioRepository.findById(usuarioSessao.getUserId()).orElse(null);
+            if (eu == null) return "redirect:/index";
+
+            Post novoPost = new Post();
+            novoPost.setTexto(texto);
+            novoPost.setUsuario(eu);
+
+            // Vincula o jogo usando a seleção exata do dropdown
+            if (nomeJogoVinculado != null && !nomeJogoVinculado.trim().isEmpty()) {
+                JogoApi jogo = jogoApiRepository.findFirstByNomeJogoIgnoreCase(nomeJogoVinculado.trim());
+                if (jogo != null) {
+                    novoPost.setJogoVinculado(jogo);
+                }
+            }
+
+            if (imagemArquivo != null && !imagemArquivo.isEmpty()) {
+                byte[] bytesImagem = imagemArquivo.getBytes();
+                String base64Imagem = Base64.getEncoder().encodeToString(bytesImagem);
+                String tipoConteudo = imagemArquivo.getContentType();
+                novoPost.setImagemUrl("data:" + tipoConteudo + ";base64," + base64Imagem);
+            }
+
+            postRepository.save(novoPost);
+
+        } catch (Exception e) {
+            // Se algo der erro (como imagem muito grande), o sistema mostra no console e apenas atualiza a página sem quebrar.
+            System.out.println("ERRO AO SALVAR POST: " + e.getMessage());
+        }
+
+        return "redirect:/perfil"; 
+    }
+
+    // --- 5. SISTEMA DE CONEXÃO ---
+    @PostMapping("/conectar/{amigoId}")
+    public String conectarComAmigo(@PathVariable Integer amigoId, HttpSession session) {
+        Usuario usuarioSessao = (Usuario) session.getAttribute("usuarioLogado");
+        if (usuarioSessao == null) return "redirect:/index";
+
+        Usuario eu = usuarioRepository.findById(usuarioSessao.getUserId()).orElse(null);
+        Usuario amigo = usuarioRepository.findById(amigoId).orElse(null);
+
+        if (eu != null && amigo != null) {
+            if (eu.getAmigos() == null) {
+                eu.setAmigos(new ArrayList<>());
+            }
+            boolean jaAmigo = eu.getAmigos().stream().anyMatch(a -> a.getUserId().equals(amigo.getUserId()));
+            if (!jaAmigo) {
+                eu.getAmigos().add(amigo);
+                usuarioRepository.save(eu);
+            }
+        }
+        return "redirect:/perfil/" + amigo.getUsername(); 
+    }
+
+    // --- 6. FAZER LOGOUT (SAIR) ---
+    @GetMapping("/logout")
+    public String fazerLogout(HttpSession session) {
+        // Destrói a sessão atual, removendo o "usuarioLogado" da memória
+        session.invalidate(); 
+        return "redirect:/index"; // Redireciona para a tela de login
     }
 }

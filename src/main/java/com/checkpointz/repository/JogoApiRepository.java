@@ -22,4 +22,7 @@ public interface JogoApiRepository extends JpaRepository<JogoApi, Integer> {
     List<JogoApi> findByNomeJogoContainingIgnoreCase(String nomeJogo);
 
     JogoApi findFirstByNomeJogoIgnoreCase(String nomeJogo);
+
+    // Verifica se um jogo já existe pelo nome
+    boolean existsByNomeJogo(String nomeJogo);
 }

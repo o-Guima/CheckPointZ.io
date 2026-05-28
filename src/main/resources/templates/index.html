@@ -1,16 +1,25 @@
 <!DOCTYPE html>
-<html lang="pt-br">
+<html lang="pt-br" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Página de Login</title>
     <link rel="stylesheet" href="./css/login.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 <body>
 
     <div class="login-container">
         <form action="/api/login" method="POST">
             <h2>Login</h2>
+
+            <div th:if="${erro}" style="color: #e94560; background: rgba(233, 69, 96, 0.1); padding: 12px; border-radius: 8px; margin-bottom: 15px; text-align: center; border: 1px solid #e94560; font-weight: bold;">
+                <i class="fas fa-exclamation-circle"></i> <span th:text="${erro}"></span>
+            </div>
+
+            <div th:if="${sucesso}" style="color: #4ade80; background: rgba(74, 222, 128, 0.1); padding: 12px; border-radius: 8px; margin-bottom: 15px; text-align: center; border: 1px solid #4ade80; font-weight: bold;">
+                <i class="fas fa-check-circle"></i> <span th:text="${sucesso}"></span>
+            </div>
 
             <div class="input-group">
                 <label for="username">Usuário</label>

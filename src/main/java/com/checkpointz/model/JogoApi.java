@@ -13,7 +13,7 @@ public class JogoApi {
     @Column(name = "idJogo")
     private Integer idJogo;
 
-    @Column(name = "nomeJogo")
+    @Column(name = "nomeJogo", unique = true)
     private String nomeJogo;
 
     @Column(name = "descricao", columnDefinition = "TEXT")
@@ -91,4 +91,6 @@ public class JogoApi {
 
     public List<JogoImagem> getImagens() { return imagens; }
     public void setImagens(List<JogoImagem> imagens) { this.imagens = imagens; }
+
+    
 }

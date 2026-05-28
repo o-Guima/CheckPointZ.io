@@ -13,7 +13,7 @@
         <a th:href="@{/feed}" class="back-link"><i class="fas fa-arrow-left"></i> Voltar para o Feed</a>
         
         <form action="/pesquisar" method="get" class="search-bar" role="search">
-            <input type="text" name="q" placeholder="Procurar jogos ou usuários...">
+            <input type="text" name="q" placeholder="Procurar jogos ou utilizadores...">
             <button type="submit" aria-label="Buscar"><i class="fas fa-search"></i></button>
         </form>
     </nav>
@@ -25,7 +25,7 @@
                 <img class="avatar-large" th:src="${usuario.fotoPerfil != null && !usuario.fotoPerfil.isEmpty() ? usuario.fotoPerfil : 'https://th.bing.com/th/id/R.4fa196e40b50668e0d732be31bc2dbfe?rik=Xci%2fN2aZPE%2bfAQ&pid=ImgRaw&r=0'}" alt="Foto de Perfil">
                 
                 <div class="user-details">
-                    <h1 th:text="${usuario.username}">Nome de Usuário</h1>
+                    <h1 th:text="${usuario.username}">Nome de Utilizador</h1>
                     <p class="bio" th:text="${usuario.descricao != null && !usuario.descricao.isEmpty() ? usuario.descricao : 'Nenhuma biografia adicionada ainda.'}">Biografia</p>
                     
                     <div class="social-links" th:if="${usuario.plataformasConectaveis != null && !usuario.plataformasConectaveis.isEmpty()}">
@@ -37,17 +37,90 @@
                     </div>
                 </div>
 
-                <button class="btn-edit-profile" th:if="${session.usuarioLogado != null and session.usuarioLogado.userId == usuario.userId}" onclick="abrirModalEdicao()">
-                    <i class="fas fa-edit"></i> Editar Perfil
-                </button>
+                <div style="display: flex; gap: 10px; height: fit-content;" th:if="${session.usuarioLogado != null and session.usuarioLogado.userId == usuario.userId}">
+                    <button class="btn-edit-profile" onclick="abrirModalEdicao()">
+                        <i class="fas fa-edit"></i> Editar Perfil
+                    </button>
+                    <a th:href="@{/logout}" class="btn-logout">
+                        <i class="fas fa-sign-out-alt"></i> Sair
+                    </a>
+                </div>
+
+                <form th:action="@{/conectar/{amigoId}(amigoId=${usuario.userId})}" method="post" th:if="${session.usuarioLogado != null and session.usuarioLogado.userId != usuario.userId}">
+                    <button type="submit" class="btn-connect" th:if="${!jaConectado}">
+                        <i class="fas fa-user-plus"></i> Conectar
+                    </button>
+                    <button type="button" class="btn-connect connected" th:if="${jaConectado}" style="background: #2a2a4a; color: #4ade80; cursor: default;">
+                        <i class="fas fa-check"></i> Conectados
+                    </button>
+                </form>
             </div>
         </div>
 
         <div class="highlights-section">
             <h3><i class="fas fa-trophy"></i> Conquista em Destaque</h3>
             <div class="highlight-card">
-                <p th:text="${usuario.conquistaDestaque != null && !usuario.conquistaDestaque.isEmpty() ? usuario.conquistaDestaque : 'O usuário ainda não selecionou um destaque.'}">Conquista incrível aqui!</p>
+                <p th:text="${usuario.conquistaDestaque != null && !usuario.conquistaDestaque.isEmpty() ? usuario.conquistaDestaque : 'O utilizador ainda não selecionou um destaque.'}">Conquista incrível aqui!</p>
             </div>
+        </div>
+
+        <div class="create-post-section" th:if="${session.usuarioLogado != null and session.usuarioLogado.userId == usuario.userId}" style="background: #1a1a2e; padding: 20px 30px; border-bottom: 1px solid #2a2a4a; border-top: 1px solid #2a2a4a;">
+            <form th:action="@{/post/novo}" method="post" enctype="multipart/form-data" style="display: flex; flex-direction: column; gap: 15px;">
+                
+                <textarea name="texto" placeholder="Sobre o que quer falar hoje? (Dicas, análises, conquistas...)" required style="resize: none; height: 100px; width: 100%; border-radius: 10px; padding: 15px; background: #16213e; color: white; border: 1px solid #2a2a4a; font-size: 1em;"></textarea>
+                
+                <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+                    <div style="display: flex; gap: 10px; flex-grow: 1;">
+                        <label for="post-img" class="btn-img-upload"><i class="fas fa-image"></i> Imagem (PNG/JPG)</label>
+                        <input type="file" name="imagemArquivo" accept="image/png, image/jpeg, image/jpg" id="post-img" style="display:none;">
+                        
+                        <select name="nomeJogoVinculado" class="game-select-input">
+                            <option value="">Nenhum Jogo (Opcional)</option>
+                            <option th:each="jogo : ${todosJogos}" th:value="${jogo.nomeJogo}" th:text="${jogo.nomeJogo}"></option>
+                        </select>
+                    </div>
+                    <button type="submit" class="btn-publish-post"><i class="fas fa-paper-plane"></i> Publicar</button>
+                </div>
+            </form>
+        </div>
+
+        <div class="timeline-section">
+            <h3 class="timeline-title"><i class="fas fa-stream"></i> Publicações Recentes</h3>
+            
+            <div th:if="${postsUsuario == null || postsUsuario.isEmpty()}" class="no-posts">
+                <i class="fas fa-comment-slash"></i>
+                <p>Nenhuma publicação encontrada.</p>
+            </div>
+
+            <article class="profile-post-card" th:each="post : ${postsUsuario}">
+                <div class="post-header">
+                    <img th:src="${post.usuario.fotoPerfil != null && !post.usuario.fotoPerfil.isEmpty() ? post.usuario.fotoPerfil : 'https://th.bing.com/th/id/R.4fa196e40b50668e0d732be31bc2dbfe?rik=Xci%2fN2aZPE%2bfAQ&pid=ImgRaw&r=0'}" class="avatar">
+                    <div class="user-info">
+                        <strong class="author-name">
+                            <a th:href="@{/perfil/{username}(username=${post.usuario.username})}" th:text="${post.usuario.username}"></a>
+                        </strong> 
+                        
+                        <span class="timestamp" th:text="${#temporals.format(post.data, 'dd/MM/yyyy')} + ' às ' + ${#temporals.format(post.hora, 'HH:mm')}"></span>
+                        
+                        <span class="subtext" th:if="${post.jogoVinculado != null}">falou sobre <b class="game-tag" th:text="${post.jogoVinculado.nomeJogo}">Jogo</b></span>
+                    </div>
+                </div>
+                
+                <div class="post-content">
+                    <p th:text="${post.texto}" class="post-text-body"></p>
+                    <img th:if="${post.imagemUrl != null}" th:src="${post.imagemUrl}" class="post-attached-img">
+                </div>
+
+                <footer class="post-footer">
+                    <button type="button" th:onclick="|reagirPostagem(${post.idPost}, 'gostei', this)|" class="btn-react btn-like">
+                        <i class="fas fa-thumbs-up"></i> Gostei (<span th:text="${post.reacaoGostei}"></span>)
+                    </button>
+
+                    <button type="button" th:onclick="|reagirPostagem(${post.idPost}, 'desgostei', this)|" class="btn-react btn-dislike">
+                        <i class="fas fa-thumbs-down"></i> Não Gostei (<span th:text="${post.reacaoDesgostei}"></span>)
+                    </button>
+                </footer>
+            </article>
         </div>
     </div>
 
@@ -59,32 +132,26 @@
             </div>
             
             <form th:action="@{/perfil/editar}" method="post" class="edit-form" enctype="multipart/form-data">
-                
                 <div class="form-group">
-                    <label>Nome de Usuário</label>
+                    <label>Nome de Utilizador</label>
                     <input type="text" name="username" th:value="${usuario.username}" required>
                 </div>
-
                 <div class="form-group">
                     <label>Nova Senha (deixe em branco para manter a atual)</label>
                     <input type="password" name="senha" placeholder="Digite apenas se quiser alterar">
                 </div>
-
                 <div class="form-group">
                     <label>Nova Foto de Perfil (PNG, JPG ou JPEG)</label>
                     <input type="file" name="fotoPerfilArquivo" accept="image/png, image/jpeg, image/jpg">
                 </div>
-
                 <div class="form-group">
                     <label>Sobre Mim (Biografia)</label>
-                    <textarea name="descricao" rows="4" th:text="${usuario.descricao}" placeholder="Fale sobre seus jogos favoritos..."></textarea>
+                    <textarea name="descricao" rows="4" th:text="${usuario.descricao}" placeholder="Fale sobre os seus jogos favoritos..."></textarea>
                 </div>
-
                 <div class="form-group">
                     <label>Conquista de Destaque</label>
                     <input type="text" name="conquistaDestaque" th:value="${usuario.conquistaDestaque}" placeholder="Ex: Platina em Elden Ring">
                 </div>
-
                 <div class="form-group" id="container-plataformas">
                     <label>Links de Conexão (Steam, Xbox, Discord, etc)</label>
                     <div class="plataforma-row">
@@ -93,26 +160,16 @@
                     </div>
                 </div>
                 <button type="button" class="btn-add-link" onclick="adicionarPlataforma()">+ Adicionar outro link</button>
-
                 <button type="submit" class="btn-save">Salvar Alterações</button>
             </form>
         </div>
     </div>
 
     <script>
-        function abrirModalEdicao() {
-            document.getElementById('modalEdicao').style.display = 'flex';
-        }
-        function fecharModalEdicao() {
-            document.getElementById('modalEdicao').style.display = 'none';
-        }
-        window.onclick = function(event) {
-            if (event.target == document.getElementById('modalEdicao')) {
-                fecharModalEdicao();
-            }
-        }
-
-        // LÓGICA ATUALIZADA: Função JavaScript para clonar a linha de inputs
+        function abrirModalEdicao() { document.getElementById('modalEdicao').style.display = 'flex'; }
+        function fecharModalEdicao() { document.getElementById('modalEdicao').style.display = 'none'; }
+        window.onclick = function(event) { if (event.target == document.getElementById('modalEdicao')) fecharModalEdicao(); }
+        
         function adicionarPlataforma() {
             const container = document.getElementById('container-plataformas');
             const novaLinha = document.createElement('div');
@@ -123,6 +180,34 @@
                 <input type="text" name="linkPlataforma" placeholder="Link" style="width: 60%;">
             `;
             container.appendChild(novaLinha);
+        }
+
+        // LÓGICA AJAX DAS REAÇÕES
+        function reagirPostagem(postId, tipo, botaoApertado) {
+            const formData = new FormData();
+            formData.append('tipo', tipo);
+
+            fetch(`/post/${postId}/reagir`, {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                const spanContador = botaoApertado.querySelector('span');
+                
+                if (tipo === 'gostei') {
+                    spanContador.innerText = data.gostei;
+                    botaoApertado.style.backgroundColor = 'rgba(74, 222, 128, 0.2)';
+                } else {
+                    spanContador.innerText = data.desgostei;
+                    botaoApertado.style.backgroundColor = 'rgba(233, 69, 96, 0.2)';
+                }
+                
+                setTimeout(() => {
+                    botaoApertado.style.backgroundColor = 'transparent';
+                }, 300);
+            })
+            .catch(erro => console.error('Erro ao registrar a reação:', erro));
         }
     </script>
 </body>

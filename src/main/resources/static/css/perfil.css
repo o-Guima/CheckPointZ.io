@@ -82,6 +82,43 @@
     background: #d63d56;
 }
 
+/* Botão de Logout */
+.btn-logout {
+    background: transparent;
+    color: #e94560;
+    border: 1px solid #e94560;
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: 0.3s;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+.btn-logout:hover {
+    background: rgba(233, 69, 96, 0.1);
+}
+
+/* Botão Conectar (Azul/Verde para destacar) */
+.btn-connect {
+    background: #4ade80;
+    color: #1a1a2e;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: 0.3s;
+    height: fit-content;
+    font-size: 1.05em;
+}
+.btn-connect:hover {
+    background: #36b063;
+    transform: scale(1.05);
+}
+
 /* Conquistas */
 .highlights-section {
     padding: 30px;
@@ -197,4 +234,208 @@
 
 .btn-add-link:hover { 
     background: rgba(169, 128, 255, 0.1); 
+}
+
+/* Área de Criar Publicação */
+.create-post-section {
+    background: #1a1a2e;
+    padding: 20px 30px;
+    border-bottom: 1px solid #2a2a4a;
+    border-top: 1px solid #2a2a4a;
+}
+.post-form {
+    display: flex;
+    gap: 15px;
+    align-items: flex-start;
+}
+.avatar-small {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid #a980ff;
+}
+.post-input-area {
+    flex-grow: 1;
+}
+.post-input-area textarea {
+    width: 100%;
+    background: #16213e;
+    border: 1px solid #2a2a4a;
+    border-radius: 10px;
+    padding: 15px;
+    color: white;
+    font-size: 1em;
+    resize: vertical;
+    margin-bottom: 10px;
+}
+.post-input-area textarea:focus {
+    outline: none;
+    border-color: #a980ff;
+}
+
+/* Dropdown de Jogos */
+.game-select-input {
+    background: #16213e;
+    color: white;
+    padding: 10px 15px;
+    border-radius: 8px;
+    border: 1px solid #2a2a4a;
+    flex-grow: 1;
+    font-family: inherit;
+    cursor: pointer;
+}
+.game-select-input:focus {
+    outline: none;
+    border-color: #a980ff;
+}
+
+/* Botões de Ação do Post */
+.btn-img-upload {
+    background: #2a2a4a; 
+    color: #a980ff; 
+    padding: 10px 15px; 
+    border-radius: 8px; 
+    cursor: pointer; 
+    font-weight: bold;
+    transition: 0.3s;
+}
+.btn-img-upload:hover {
+    background: #3a3a5a;
+}
+.btn-publish-post {
+    background: #e94560; 
+    color: white; 
+    border: none; 
+    padding: 10px 25px; 
+    border-radius: 8px; 
+    font-weight: bold; 
+    cursor: pointer;
+    transition: 0.3s;
+}
+.btn-publish-post:hover {
+    background: #d63d56;
+}
+
+/* Estilização dos Posts na Timeline */
+.timeline-section {
+    padding: 30px;
+}
+
+.timeline-title {
+    color: #a980ff;
+    margin-bottom: 25px;
+    font-size: 1.5em;
+    border-bottom: 1px solid #2a2a4a;
+    padding-bottom: 10px;
+}
+
+.no-posts {
+    text-align: center;
+    color: #aaa;
+    padding: 40px 0;
+}
+.no-posts i {
+    font-size: 3em;
+    margin-bottom: 15px;
+    color: #2a2a4a;
+}
+
+.profile-post-card {
+    background: #1a1a2e;
+    border: 1px solid #2a2a4a;
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 20px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+    transition: transform 0.3s;
+}
+
+.profile-post-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 15px rgba(0,0,0,0.5);
+}
+
+.profile-post-card .post-header {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 15px;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+    padding-bottom: 15px;
+}
+
+.author-name {
+    color: #fff;
+    font-size: 1.1em;
+}
+
+.author-name a {
+    color: white;
+    text-decoration: none;
+}
+.author-name a:hover {
+    text-decoration: underline;
+}
+
+.timestamp {
+    color: #aaa;
+    font-size: 0.85em;
+    display: block;
+}
+
+.subtext {
+    display: block;
+    margin-top: 5px;
+    font-size: 0.9em;
+}
+
+.game-tag {
+    color: #a980ff;
+    background: rgba(169, 128, 255, 0.1);
+    padding: 2px 8px;
+    border-radius: 10px;
+}
+
+.post-text-body {
+    color: #ccc;
+    line-height: 1.5;
+    font-size: 1em;
+}
+
+.post-attached-img {
+    width: 100%;
+    border-radius: 10px;
+    margin-top: 15px;
+    max-height: 400px;
+    object-fit: cover;
+    border: 1px solid #2a2a4a;
+}
+
+/* Botões de Reação */
+.post-footer {
+    display: flex;
+    gap: 15px;
+    margin-top: 15px;
+    border-top: 1px solid rgba(255,255,255,0.05);
+    padding-top: 15px;
+}
+
+.btn-react {
+    background: transparent;
+    padding: 6px 15px;
+    border-radius: 20px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: 0.3s;
+}
+
+.btn-like {
+    border: 1px solid #4ade80;
+    color: #4ade80;
+}
+
+.btn-dislike {
+    border: 1px solid #e94560;
+    color: #e94560;
 }
