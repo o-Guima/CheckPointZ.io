@@ -20,9 +20,7 @@ public class Usuario {
     @Column(name = "senha", nullable = false)
     private String senha;
 
-    // --- NOVOS CAMPOS DO PERFIL ---
-// --- NOVOS CAMPOS DO PERFIL ---
-    @Column(name = "fotoPerfil", columnDefinition = "LONGTEXT")
+        @Column(name = "fotoPerfil", columnDefinition = "LONGTEXT")
     private String fotoPerfil;
     
     @Column(name = "descricao", columnDefinition = "TEXT")
@@ -36,8 +34,7 @@ public class Usuario {
 
     public Usuario() {}
 
-    // --- GETTERS E SETTERS ---
-    public Integer getUserId() { return userId; }
+        public Integer getUserId() { return userId; }
     public void setUserId(Integer userId) { this.userId = userId; }
 
     public String getUsername() { return username; }
@@ -61,17 +58,13 @@ public class Usuario {
     public String getPlataformasConectaveis() { return plataformasConectaveis; }
     public void setPlataformasConectaveis(String plataformasConectaveis) { this.plataformasConectaveis = plataformasConectaveis; }
 
-  // --- SISTEMA DE CONEXÕES (Apontando para a tabela 'conexoes') ---
-    @ManyToMany(fetch = FetchType.EAGER)
+      @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
         name = "conexoes", 
-        joinColumns = @JoinColumn(name = "seguidorId"), // A pessoa que clicou em conectar
-        inverseJoinColumns = @JoinColumn(name = "seguidoId") // O perfil que ela visitou
-    )
+        joinColumns = @JoinColumn(name = "seguidorId"),         inverseJoinColumns = @JoinColumn(name = "seguidoId")     )
     private java.util.List<Usuario> amigos;
 
-    // Adicione os Getters e Setters dos amigos lá no final do arquivo:
-    public java.util.List<Usuario> getAmigos() { return amigos; }
+        public java.util.List<Usuario> getAmigos() { return amigos; }
     public void setAmigos(java.util.List<Usuario> amigos) { this.amigos = amigos; }
 
     @Column(name = "verificado", columnDefinition = "boolean default false")
@@ -80,8 +73,7 @@ public class Usuario {
     @Column(name = "tokenVerificacao")
     private String tokenVerificacao;
 
-    // Adicione os Getters e Setters correspondentes no final do ficheiro:
-    public boolean isVerificado() { return verificado; }
+        public boolean isVerificado() { return verificado; }
     public void setVerificado(boolean verificado) { this.verificado = verificado; }
 
     public String getTokenVerificacao() { return tokenVerificacao; }

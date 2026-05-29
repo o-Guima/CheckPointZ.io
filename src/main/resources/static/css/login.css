@@ -1,4 +1,4 @@
-/* Reset básico e fontes */
+
 * {
     margin: 0;
     padding: 0;
@@ -7,22 +7,20 @@
 
 body {
     font-family: Arial, sans-serif;
-    /* NOVO EFEITO: O gradiente agora é animado.
-      Trocamos o 'background' por 'background-size' e 'animation'.
-    */
+   
     background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
-    background-size: 400% 400%; /* Tamanho maior para permitir a animação */
-    animation: animateGradient 15s ease infinite; /* Chama a animação */
+    background-size: 400% 400%; 
+    animation: animateGradient 15s ease infinite; 
     
     color: #e0e0e0;
     display: flex;
     justify-content: center;
     align-items: center;
     min-height: 100vh;
-    overflow: hidden; /* Impede barras de rolagem pela animação */
+    overflow: hidden; 
 }
 
-/* Container do formulário */
+
 .login-container {
     width: 100%;
     max-width: 400px;
@@ -33,7 +31,7 @@ body {
     box-shadow: 0 8px 20px rgba(0, 0, 0, 0.5);
     text-align: center;
     
-    /* NOVO EFEITO: Animação de flutuação */
+   
     animation: floatBox 6s ease-in-out infinite;
 }
 
@@ -43,7 +41,7 @@ h2 {
     color: #ffffff;
 }
 
-/* Grupos de input (label + campo) */
+
 .input-group {
     margin-bottom: 1.5rem;
     text-align: left;
@@ -87,7 +85,7 @@ h2 {
     text-decoration: underline;
 }
 
-/* Botão principal de login */
+
 .login-button {
     width: 100%;
     padding: 0.8rem;
@@ -100,16 +98,16 @@ h2 {
     cursor: pointer;
     transition: background-color 0.3s ease;
     
-    /* NOVO EFEITO: Animação de pulsação */
+   
     animation: pulseButton 2.5s infinite;
 }
 
 .login-button:hover {
     background-color: #8a2be2;
-    animation-play-state: paused; /* Pausa a pulsação no hover */
+    animation-play-state: paused; 
 }
 
-/* Link de cadastro */
+
 .signup-link {
     margin-top: 2rem;
     color: #aaa;
@@ -125,26 +123,22 @@ h2 {
 }
 
 
-/* =======================================
-  NOVAS ANIMAÇÕES (Keyframes)
-  =======================================
-*/
 
-/* Animação para o gradiente do background */
+
+
 @keyframes animateGradient {
     0% { background-position: 0% 50%; }
     50% { background-position: 100% 50%; }
     100% { background-position: 0% 50%; }
 }
 
-/* Animação para flutuação do card */
+
 @keyframes floatBox {
     0% { transform: translateY(0px); }
     50% { transform: translateY(-10px); }
     100% { transform: translateY(0px); }
 }
 
-/* Animação para pulsação do botão */
 @keyframes pulseButton {
     0% {
         box-shadow: 0 0 10px rgba(106, 13, 173, 0.7);

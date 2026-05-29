@@ -37,7 +37,7 @@ public class PerfilController {
     @GetMapping("/perfil")
     public String exibirPerfil(HttpSession session, Model model) {
         Usuario usuarioSessao = (Usuario) session.getAttribute("usuarioLogado");
-        if (usuarioSessao == null) return "redirect:/index.html";
+        if (usuarioSessao == null) return "redirect:/index";
 
         Usuario usuarioAtualizado = usuarioRepository.findById(usuarioSessao.getUserId()).orElse(null);
         model.addAttribute("usuario", usuarioAtualizado);
@@ -47,8 +47,8 @@ public class PerfilController {
             model.addAttribute("postsUsuario", meusPosts);
         }
 
-        // NOVO: Busca todos os jogos para preencher a lista (Dropdown) de vinculação
-        List<JogoApi> todosJogos = jogoApiRepository.findAll();
+        // Dropdown ordenado alfabeticamente
+        List<JogoApi> todosJogos = jogoApiRepository.findAllByOrderByNomeJogoAsc();
         model.addAttribute("todosJogos", todosJogos);
         
         return "perfil";
@@ -58,7 +58,7 @@ public class PerfilController {
     @GetMapping("/perfil/{username}")
     public String verPerfilPublico(@PathVariable String username, HttpSession session, Model model) {
         Usuario usuarioSessao = (Usuario) session.getAttribute("usuarioLogado");
-        if (usuarioSessao == null) return "redirect:/index.html";
+        if (usuarioSessao == null) return "redirect:/index";
 
         Usuario usuarioPerfil = usuarioRepository.findByUsername(username);
         if (usuarioPerfil == null) return "redirect:/pesquisar"; 
@@ -75,8 +75,8 @@ public class PerfilController {
         List<Post> postsDoUsuario = postRepository.findByUsuario_UserIdOrderByDataCriacaoDesc(usuarioPerfil.getUserId());
         model.addAttribute("postsUsuario", postsDoUsuario);
 
-        // Preenche a lista de jogos caso haja interação futura
-        List<JogoApi> todosJogos = jogoApiRepository.findAll();
+        // Dropdown ordenado alfabeticamente
+        List<JogoApi> todosJogos = jogoApiRepository.findAllByOrderByNomeJogoAsc();
         model.addAttribute("todosJogos", todosJogos);
         
         return "perfil";
@@ -103,6 +103,7 @@ public class PerfilController {
             usuarioBanco.setUsername(username);
             
             if (senha != null && !senha.trim().isEmpty()) {
+                // Se a sua edição de perfil já tiver a senha BCrypt configurada, mantenha-a aqui!
                 usuarioBanco.setSenha(senha);
             }
 
@@ -139,10 +140,10 @@ public class PerfilController {
         return "redirect:/perfil";
     }
 
-    // --- 4. CRIAR UMA NOVA PUBLICAÇÃO (POST) ---
+    // --- 4. CRIAR UMA NOVA PUBLICAÇÃO (MÚLTIPLAS IMAGENS VIA BASE64) ---
     @PostMapping("/post/novo")
     public String criarPost(@RequestParam("texto") String texto,
-                            @RequestParam(value = "imagemArquivo", required = false) MultipartFile imagemArquivo,
+                            @RequestParam(value = "imagensArquivos", required = false) List<MultipartFile> imagensArquivos,
                             @RequestParam(value = "nomeJogoVinculado", required = false) String nomeJogoVinculado,
                             HttpSession session) {
         
@@ -157,25 +158,32 @@ public class PerfilController {
             novoPost.setTexto(texto);
             novoPost.setUsuario(eu);
 
-            // Vincula o jogo usando a seleção exata do dropdown
-            if (nomeJogoVinculado != null && !nomeJogoVinculado.trim().isEmpty()) {
+            // Vincula o jogo ignorando o "Nenhum Jogo"
+            if (nomeJogoVinculado != null && !nomeJogoVinculado.trim().isEmpty() && !nomeJogoVinculado.equals("Nenhum Jogo (Opcional)")) {
                 JogoApi jogo = jogoApiRepository.findFirstByNomeJogoIgnoreCase(nomeJogoVinculado.trim());
                 if (jogo != null) {
                     novoPost.setJogoVinculado(jogo);
                 }
             }
 
-            if (imagemArquivo != null && !imagemArquivo.isEmpty()) {
-                byte[] bytesImagem = imagemArquivo.getBytes();
-                String base64Imagem = Base64.getEncoder().encodeToString(bytesImagem);
-                String tipoConteudo = imagemArquivo.getContentType();
-                novoPost.setImagemUrl("data:" + tipoConteudo + ";base64," + base64Imagem);
+            // ==========================================
+            // LÓGICA DE MÚLTIPLAS IMAGENS
+            // ==========================================
+            if (imagensArquivos != null && !imagensArquivos.isEmpty()) {
+                for (MultipartFile img : imagensArquivos) {
+                    if (!img.isEmpty()) {
+                        byte[] bytesImagem = img.getBytes();
+                        String base64Imagem = Base64.getEncoder().encodeToString(bytesImagem);
+                        String tipoConteudo = img.getContentType();
+                        // Adiciona a imagem formatada à lista de imagens do Post
+                        novoPost.getImagensUrls().add("data:" + tipoConteudo + ";base64," + base64Imagem);
+                    }
+                }
             }
 
             postRepository.save(novoPost);
 
         } catch (Exception e) {
-            // Se algo der erro (como imagem muito grande), o sistema mostra no console e apenas atualiza a página sem quebrar.
             System.out.println("ERRO AO SALVAR POST: " + e.getMessage());
         }
 
@@ -207,8 +215,7 @@ public class PerfilController {
     // --- 6. FAZER LOGOUT (SAIR) ---
     @GetMapping("/logout")
     public String fazerLogout(HttpSession session) {
-        // Destrói a sessão atual, removendo o "usuarioLogado" da memória
         session.invalidate(); 
-        return "redirect:/index"; // Redireciona para a tela de login
+        return "redirect:/index"; 
     }
 }

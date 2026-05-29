@@ -52,7 +52,7 @@ public class JogoApi {
 
     public JogoApi() {}
 
-    // Getters e Setters
+    
     public Integer getIdJogo() { return idJogo; }
     public void setIdJogo(Integer idJogo) { this.idJogo = idJogo; }
 

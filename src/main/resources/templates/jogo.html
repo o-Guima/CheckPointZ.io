@@ -2,7 +2,7 @@
 <html lang="pt-br" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title th:text="${jogo.nomeJogo} + ' - CheckPointZ'">Detalhes do Jogo</title>
+    <title th:text="${jogo.nomeJogo} + ' - CheckPointZ'"></title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link rel="stylesheet" th:href="@{/css/jogo.css}">
 </head>
@@ -22,14 +22,13 @@
 
                 <div class="thumbnails-row">
                     <img class="thumb active" th:src="${jogo.fotoJogo}" onclick="changeImage(this.src)" th:alt="${jogo.nomeJogo}">
-                    
-                    <img class="thumb" th:each="img : ${jogo.imagens}" th:src="${img.urlImagem}" onclick="changeImage(this.src)" alt="Screenshot do Jogo">
+                    <img class="thumb" th:each="img : ${jogo.imagens}" th:src="${img.urlImagem}" onclick="changeImage(this.src)">
                 </div>
             </div>
 
             <div class="info-section">
                 <div class="info-card">
-                    <h1 class="game-title" th:text="${jogo.nomeJogo}">Nome do Jogo</h1>
+                    <h1 class="game-title" th:text="${jogo.nomeJogo}"></h1>
 
                     <a href="#" class="game-developer-link">
                         <p>@steam.rawg.data</p>
@@ -37,29 +36,24 @@
 
                     <div class="platforms-row">
                         <a th:if="${jogo.linkXbox != null}" th:href="${jogo.linkXbox}" target="_blank" style="color: inherit; text-decoration: none;">
-                            <i class="fab fa-xbox platform-icon" title="Comprar no Xbox"></i>
+                            <i class="fab fa-xbox platform-icon"></i>
                         </a>
                         <a th:if="${jogo.linkPlaystation != null}" th:href="${jogo.linkPlaystation}" target="_blank" style="color: inherit; text-decoration: none;">
-                            <i class="fab fa-playstation platform-icon" title="Comprar no PlayStation"></i>
+                            <i class="fab fa-playstation platform-icon"></i>
                         </a>
                         <a th:if="${jogo.linkSteam != null}" th:href="${jogo.linkSteam}" target="_blank" style="color: inherit; text-decoration: none;">
-                            <i class="fab fa-steam platform-icon" title="Comprar na Steam"></i>
+                            <i class="fab fa-steam platform-icon"></i>
                         </a>
                     </div>
 
                     <div class="tags-container" th:if="${jogo.generos != null}">
-                        <span class="tag" th:each="genero : ${#strings.arraySplit(jogo.generos, ',')}" th:text="${#strings.trim(genero)}">
-                            Aventura
-                        </span>
+                        <span class="tag" th:each="genero : ${#strings.arraySplit(jogo.generos, ',')}" th:text="${#strings.trim(genero)}"></span>
                     </div>
 
                     <div class="price-container">
                         <div class="price-tag" style="display: flex; flex-direction: column; align-items: flex-start; gap: 5px;">
                             <span class="price-old" th:if="${jogo.precosOriginais != null}" th:text="'Valor Base: R$ ' + ${jogo.precosOriginais}"></span>
-        
-                            <span class="price-current" th:if="${jogo.precosPromocoes != null}" 
-                                th:text="${(jogo.lojaPromocao != null ? jogo.lojaPromocao + ': ' : '')} + 'R$ ' + ${jogo.precosPromocoes}">
-                            </span>
+                            <span class="price-current" th:if="${jogo.precosPromocoes != null}" th:text="${(jogo.lojaPromocao != null ? jogo.lojaPromocao + ': ' : '')} + 'R$ ' + ${jogo.precosPromocoes}"></span>
                         </div>
                     </div>
                     
@@ -72,59 +66,53 @@
             
             <div class="game-description">
                 <h3>Sobre o Jogo</h3>
-                <p th:text="${jogo.descricao}">
-                    Carregando dados da API...
-                </p>
+                <p th:text="${jogo.descricao}"></p>
             </div>
             
             <div class="developer-showcase">
                 <span>Distribuidora / Estúdio</span>
-                <p style="color: #a980ff; font-weight: bold; margin-top: 5px;" th:text="${jogo.distribuidora}">Nome da Distribuidora</p>
+                <p style="color: #a980ff; font-weight: bold; margin-top: 5px;" th:text="${jogo.distribuidora}"></p>
             </div>
 
         </div> 
 
-        <!-- SEÇÃO DE AVALIAÇÕES DA COMUNIDADE VINCULADAS AO JOGO -->
         <div class="reviews-section" style="margin-top: 40px; background-color: rgba(10, 10, 20, 0.85); border: 1px solid #302b63; border-radius: 12px; padding: 25px;">
             <div class="reviews-header" style="margin-bottom: 20px; border-bottom: 1px solid #302b63; padding-bottom: 10px;">
                 <h3 style="color: #8a2be2;">O que estão dizendo</h3>
             </div>
             
-            <!-- Mensagem caso não haja publicações -->
-            <div th:if="${postsDoJogo == null || postsDoJogo.isEmpty()}" class="no-reviews">
-                <p style="color: #aaa; font-style: italic;">Ninguém falou sobre este jogo ainda. Vá ao seu perfil, crie um post marcando este jogo e seja o primeiro!</p>
+            <div th:if="${postsDoJogo == null || postsDoJogo.isEmpty()}" class="no-reviews" style="color: #aaa; font-style: italic;">
+                <p>Ninguém falou sobre este jogo ainda. Vá ao seu perfil, crie um post marcando este jogo e seja o primeiro!</p>
             </div>
 
-            <!-- Lista de Publicações Reais -->
-            <div class="review-item-dynamic" th:each="post : ${postsDoJogo}" style="background: #24243e; padding: 20px; border-radius: 10px; margin-bottom: 15px; border: 1px solid rgba(255,255,255,0.05);">
-                
-                <div style="display: flex; align-items: center; gap: 15px; margin-bottom: 15px;">
-                    <img class="review-avatar" th:src="${post.usuario.fotoPerfil != null && !post.usuario.fotoPerfil.isEmpty() ? post.usuario.fotoPerfil : 'https://th.bing.com/th/id/R.4fa196e40b50668e0d732be31bc2dbfe?rik=Xci%2fN2aZPE%2bfAQ&pid=ImgRaw&r=0'}" style="width: 50px; height: 50px; border-radius: 50%; object-fit: cover; border: 2px solid #8a2be2;">
-                    
+            <article th:each="post : ${postsDoJogo}" style="background: #24243e; border: 1px solid rgba(255,255,255,0.05); border-radius: 12px; padding: 20px; margin-bottom: 20px; display: flex; flex-direction: column; width: 100%; box-sizing: border-box;">
+                <header style="display: flex; align-items: center; gap: 15px; margin-bottom: 15px; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 15px;">
+                    <img th:src="${post.usuario.fotoPerfil != null && !post.usuario.fotoPerfil.isEmpty() ? post.usuario.fotoPerfil : 'https://th.bing.com/th/id/R.4fa196e40b50668e0d732be31bc2dbfe?rik=Xci%2fN2aZPE%2bfAQ&pid=ImgRaw&r=0'}" style="width: 50px; height: 50px; border-radius: 50%; object-fit: cover;">
                     <div>
-                        <strong class="review-author" style="display: block; font-size: 1.05rem;">
-                            <a th:href="@{/perfil/{username}(username=${post.usuario.username})}" th:text="${post.usuario.username}" style="color: #fff; text-decoration: none;">User</a>
-                        </strong>
-                        <span class="timestamp" th:text="${#temporals.format(post.data, 'dd/MM/yyyy')} + ' às ' + ${#temporals.format(post.hora, 'HH:mm')}" style="color: #aaa; font-size: 0.85em;"></span>
+                        <strong style="color: #fff; font-size: 1.1em; display: block;">
+                            <a th:href="@{/perfil/{username}(username=${post.usuario.username})}" th:text="${post.usuario.username}" style="color: white; text-decoration: none;"></a>
+                        </strong> 
+                        <span th:text="${#temporals.format(post.data, 'dd/MM/yyyy')} + ' às ' + ${#temporals.format(post.hora, 'HH:mm')}" style="color: #aaa; font-size: 0.85em;"></span>
+                    </div>
+                </header>
+                
+                <div style="flex-grow: 1;">
+                    <p th:text="${post.texto}" style="color: #ccc; line-height: 1.5; margin-bottom: 15px; word-wrap: break-word;"></p>
+                    <div th:if="${post.imagensUrls != null and !post.imagensUrls.isEmpty()}" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 10px; margin-bottom: 15px;">
+                        <img th:each="imgUrl : ${post.imagensUrls}" th:src="${imgUrl}" style="width: 100%; height: 300px; object-fit: cover; border-radius: 8px; border: 1px solid #302b63;">
                     </div>
                 </div>
 
-                <div class="review-content-dynamic">
-                    <p class="review-text-dynamic" th:text="${post.texto}" style="color: #ccc; margin: 0; line-height: 1.5; font-size: 0.95rem;">Comentário...</p>
-                    <img class="review-attached-img" th:if="${post.imagemUrl != null}" th:src="${post.imagemUrl}" style="max-width: 100%; border-radius: 8px; margin-top: 15px; max-height: 250px; object-fit: cover; border: 1px solid #302b63;">
-                </div>
-
-                <!-- BOTÕES DE REAÇÃO NO JOGO (AJAX) -->
-                <footer class="post-footer" style="display: flex; gap: 15px; margin-top: 15px; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 15px;">
-                    <button type="button" th:onclick="|reagirPostagem(${post.idPost}, 'gostei', this)|" style="background: transparent; border: 1px solid #4ade80; color: #4ade80; padding: 5px 12px; border-radius: 20px; cursor: pointer; font-weight: bold; font-size: 0.85em; transition: 0.3s;">
+                <footer style="display: flex; justify-content: flex-start; gap: 15px; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 15px; margin-top: auto; flex-wrap: wrap;">
+                    <button type="button" th:onclick="|reagirPostagem(${post.idPost}, 'gostei', this)|" style="background: transparent; border: 1px solid #4ade80; color: #4ade80; padding: 8px 16px; border-radius: 20px; cursor: pointer; font-weight: bold; font-size: 0.9em; height: fit-content; display: flex; align-items: center; gap: 8px; transition: 0.3s;">
                         <i class="fas fa-thumbs-up"></i> Gostei (<span th:text="${post.reacaoGostei}"></span>)
                     </button>
 
-                    <button type="button" th:onclick="|reagirPostagem(${post.idPost}, 'desgostei', this)|" style="background: transparent; border: 1px solid #e94560; color: #e94560; padding: 5px 12px; border-radius: 20px; cursor: pointer; font-weight: bold; font-size: 0.85em; transition: 0.3s;">
+                    <button type="button" th:onclick="|reagirPostagem(${post.idPost}, 'desgostei', this)|" style="background: transparent; border: 1px solid #e94560; color: #e94560; padding: 8px 16px; border-radius: 20px; cursor: pointer; font-weight: bold; font-size: 0.9em; height: fit-content; display: flex; align-items: center; gap: 8px; transition: 0.3s;">
                         <i class="fas fa-thumbs-down"></i> Não Gostei (<span th:text="${post.reacaoDesgostei}"></span>)
                     </button>
                 </footer>
-            </div>
+            </article>
         </div>
 
     </div>
@@ -134,7 +122,6 @@
         <img class="modal-content" id="modalImg">
     </div>
 
-    <!-- SCRIPT DA GALERIA E AJAX -->
     <script>
         function changeImage(src) {
             document.getElementById('mainImage').src = src;
@@ -161,7 +148,6 @@
             if (event.key === "Escape") closeModal();
         });
 
-        // LÓGICA AJAX DAS REAÇÕES
         function reagirPostagem(postId, tipo, botaoApertado) {
             const formData = new FormData();
             formData.append('tipo', tipo);

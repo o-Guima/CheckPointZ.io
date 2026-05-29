@@ -13,10 +13,8 @@ public class WebConfig implements WebMvcConfigurer {
 
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
-        // Rotas que EXIGEM login para entrar
         registry.addInterceptor(segurancaInterceptor)
                 .addPathPatterns("/feed", "/perfil/**", "/jogo/**", "/pesquisar", "/post/**", "/conectar/**")
-                // Rotas públicas que não precisam de login
                 .excludePathPatterns("/index", "/cadastro", "/login", "/css/**", "/images/**", "/uploads/**");
     }
 }

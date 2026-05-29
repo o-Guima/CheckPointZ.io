@@ -39,16 +39,14 @@ public class FeedController {
         
         Usuario usuarioSessao = (Usuario) session.getAttribute("usuarioLogado");
         if (usuarioSessao == null) {
-            return "redirect:/index.html"; 
+            return "redirect:/index"; 
         }
         
-        // Recarrega o usuário do banco para garantir que a lista de amigos na barra lateral esteja sempre atualizada
         Usuario usuarioAtualizado = usuarioRepository.findById(usuarioSessao.getUserId()).orElse(null);
         model.addAttribute("usuarioLogado", usuarioAtualizado);
 
         List<JogoApi> todosOsJogos = jogoApiRepository.findAll();
 
-        // LÓGICA DE OFERTAS: Filtra promoções reais e ordena pelos mais caros, pegando os 7 primeiros
         List<JogoApi> ofertasComCalculo = todosOsJogos.stream()
             .filter(j -> j.getPrecosOriginais() != null 
                       && j.getPrecosPromocoes() != null 
@@ -59,9 +57,10 @@ public class FeedController {
             .collect(Collectors.toList());
 
         List<JogoApi> emAlta = jogoApiRepository.encontrarJogosAleatorios();
-
-        // Busca as publicações (posts) globais reais do banco de dados para a linha do tempo
         List<Post> feedPosts = postRepository.findAllByOrderByDataCriacaoDesc();
+
+        List<JogoApi> dropdownJogos = jogoApiRepository.findAllByOrderByNomeJogoAsc();
+        model.addAttribute("todosJogos", dropdownJogos);
 
         model.addAttribute("ofertas", ofertasComCalculo);
         model.addAttribute("emAlta", emAlta);
@@ -70,14 +69,13 @@ public class FeedController {
         return "feed"; 
     }
 
-    // --- 2. A TELA DE PESQUISA AVANÇADA ---
     @GetMapping("/pesquisar")
     public String pesquisar(@RequestParam(value = "q", required = false) String query, 
                             @RequestParam(value = "tipo", defaultValue = "todos") String tipo,
                             Model model, HttpSession session) {
         
         Usuario usuario = (Usuario) session.getAttribute("usuarioLogado");
-        if (usuario == null) return "redirect:/index.html";
+        if (usuario == null) return "redirect:/index";
 
         List<JogoApi> resultadosJogos = null;
         List<Usuario> resultadosUsuarios = null;
@@ -107,12 +105,11 @@ public class FeedController {
         return "pesquisa"; 
     }
 
-    // --- 3. CARREGAR A PÁGINA ESPECÍFICA DO JOGO ---
     @GetMapping("/jogo/{nomeJogo}")
     public String verDetalhesDoJogo(@PathVariable String nomeJogo, HttpSession session, Model model) {
         
         Usuario usuario = (Usuario) session.getAttribute("usuarioLogado");
-        if (usuario == null) return "redirect:/index.html";
+        if (usuario == null) return "redirect:/index";
         model.addAttribute("usuarioLogado", usuario);
 
         JogoApi jogo = jogoApiRepository.findFirstByNomeJogoIgnoreCase(nomeJogo);
@@ -121,7 +118,6 @@ public class FeedController {
             return "redirect:/feed";
         }
 
-        // Busca os posts que mencionam especificamente este jogo para a secção de "O Que Estão Dizendo"
         List<Post> postsDoJogo = postRepository.findByJogoVinculado_IdJogoOrderByDataCriacaoDesc(jogo.getIdJogo());
 
         model.addAttribute("jogo", jogo);
@@ -129,7 +125,6 @@ public class FeedController {
         return "jogo"; 
     }
 
-   // --- 4. REAÇÕES COM LIMITE DE 1 POR USUÁRIO (TIPO REDE SOCIAL) ---
     @PostMapping("/post/{id}/reagir")
     @ResponseBody
     public ResponseEntity<java.util.Map<String, Integer>> reagirPost(@PathVariable Integer id, @RequestParam("tipo") String tipo, HttpSession session) {
@@ -142,37 +137,30 @@ public class FeedController {
         if (post != null) {
             Integer meuId = usuarioSessao.getUserId();
             
-            // Verifica se o usuário já clicou antes
             boolean jaGostou = post.getUsuariosQueGostaram().stream().anyMatch(u -> u.getUserId().equals(meuId));
             boolean jaDesgostou = post.getUsuariosQueDesgostaram().stream().anyMatch(u -> u.getUserId().equals(meuId));
 
             if ("gostei".equals(tipo)) {
                 if (jaGostou) {
-                    // Se já tinha curtido, Clica de novo para REMOVER (Descurtir)
                     post.getUsuariosQueGostaram().removeIf(u -> u.getUserId().equals(meuId));
                 } else {
-                    // Curte o post e remove o dislike caso existisse
                     post.getUsuariosQueGostaram().add(usuarioSessao);
                     post.getUsuariosQueDesgostaram().removeIf(u -> u.getUserId().equals(meuId));
                 }
             } else if ("desgostei".equals(tipo)) {
                 if (jaDesgostou) {
-                    // Se já tinha dado dislike, Clica de novo para REMOVER
                     post.getUsuariosQueDesgostaram().removeIf(u -> u.getUserId().equals(meuId));
                 } else {
-                    // Dá dislike e remove o like caso existisse
                     post.getUsuariosQueDesgostaram().add(usuarioSessao);
                     post.getUsuariosQueGostaram().removeIf(u -> u.getUserId().equals(meuId));
                 }
             }
             
-            // Atualiza os números matemáticos reais baseados em quantas pessoas estão na lista
             post.setReacaoGostei(post.getUsuariosQueGostaram().size());
             post.setReacaoDesgostei(post.getUsuariosQueDesgostaram().size());
             
             postRepository.save(post);
             
-            // Devolve os números atualizados para o HTML brilhar
             java.util.Map<String, Integer> resposta = new java.util.HashMap<>();
             resposta.put("gostei", post.getReacaoGostei());
             resposta.put("desgostei", post.getReacaoDesgostei());

@@ -74,7 +74,7 @@ public class JogoApiService {
             
             boolean precisaAtualizar = false;
             
-            // 1. Limpeza do "Lixo" do passado
+            
             if (j.getPrecosPromocoes() != null && j.getPrecosOriginais() != null) {
                 if (j.getPrecosPromocoes().compareTo(j.getPrecosOriginais()) >= 0) {
                     j.setPrecosPromocoes(null);
@@ -83,7 +83,7 @@ public class JogoApiService {
                 }
             }
 
-            // 2. Verifica se faltam dados
+            
             if (j.getDistribuidora() == null || j.getDescricao() == null || j.getDescricao().contains("Link oficial GG.deals")) {
                 precisaAtualizar = true;
             } else if (j.getLinkPlaystation() == null) {
@@ -138,10 +138,10 @@ public class JogoApiService {
                     String steamAppId = campo.getKey();
                     String nomeDoJogo = jogoGg.path("title").asText();
                     
-                    // =========================================================================
-                    // 🛡️ A TRAVA DE SEGURANÇA (Onde deve estar):
-                    // Se o jogo existe, damos "continue" para pular a criação e salvar duplicado.
-                    // =========================================================================
+                    
+                    
+                    
+                    
                     if (jogoApiRepository.existsByNomeJogo(nomeDoJogo)) {
                         System.out.println("⚠️ O jogo '" + nomeDoJogo + "' já existe. Pulando...");
                         continue; 
@@ -159,7 +159,7 @@ public class JogoApiService {
                         lojaVencedora = "Keyshops";
                     }
 
-                    // Se passou pela trava, criamos o jogo:
+                    
                     JogoApi jogoParaSalvar = new JogoApi();
                     jogoParaSalvar.setNomeJogo(nomeDoJogo);
                     jogoParaSalvar.setPrecosOriginais(precoBase);
@@ -173,8 +173,8 @@ public class JogoApiService {
                     buscarDetalhesCompletosDaRawg(jogoParaSalvar, restTemplate);
 
                     if (jogoParaSalvar.getDistribuidora() != null) {
-                        // saveAndFlush garante que a gravação é imediata, 
-                        // evitando que o próximo loop não veja o que acabou de ser salvo.
+                        
+                        
                         jogoApiRepository.saveAndFlush(jogoParaSalvar);
                     }
                 }

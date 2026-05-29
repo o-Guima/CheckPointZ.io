@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title th:text="${usuario.username} + ' - Perfil CheckPointZ'">Perfil</title>
+    <title th:text="${usuario.username} + ' - Perfil CheckPointZ'"></title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link rel="stylesheet" th:href="@{/css/feed.css}">
     <link rel="stylesheet" th:href="@{/css/perfil.css}">
@@ -22,11 +22,11 @@
         <div class="profile-header">
             <div class="banner"></div>
             <div class="profile-info-main">
-                <img class="avatar-large" th:src="${usuario.fotoPerfil != null && !usuario.fotoPerfil.isEmpty() ? usuario.fotoPerfil : 'https://th.bing.com/th/id/R.4fa196e40b50668e0d732be31bc2dbfe?rik=Xci%2fN2aZPE%2bfAQ&pid=ImgRaw&r=0'}" alt="Foto de Perfil">
+                <img class="avatar-large" th:src="${usuario.fotoPerfil != null && !usuario.fotoPerfil.isEmpty() ? usuario.fotoPerfil : 'https://th.bing.com/th/id/R.4fa196e40b50668e0d732be31bc2dbfe?rik=Xci%2fN2aZPE%2bfAQ&pid=ImgRaw&r=0'}">
                 
                 <div class="user-details">
-                    <h1 th:text="${usuario.username}">Nome de Utilizador</h1>
-                    <p class="bio" th:text="${usuario.descricao != null && !usuario.descricao.isEmpty() ? usuario.descricao : 'Nenhuma biografia adicionada ainda.'}">Biografia</p>
+                    <h1 th:text="${usuario.username}"></h1>
+                    <p class="bio" th:text="${usuario.descricao != null && !usuario.descricao.isEmpty() ? usuario.descricao : 'Nenhuma biografia adicionada ainda.'}"></p>
                     
                     <div class="social-links" th:if="${usuario.plataformasConectaveis != null && !usuario.plataformasConectaveis.isEmpty()}">
                         <span th:each="plat : ${#strings.arraySplit(usuario.plataformasConectaveis, '###')}">
@@ -60,7 +60,7 @@
         <div class="highlights-section">
             <h3><i class="fas fa-trophy"></i> Conquista em Destaque</h3>
             <div class="highlight-card">
-                <p th:text="${usuario.conquistaDestaque != null && !usuario.conquistaDestaque.isEmpty() ? usuario.conquistaDestaque : 'O utilizador ainda não selecionou um destaque.'}">Conquista incrível aqui!</p>
+                <p th:text="${usuario.conquistaDestaque != null && !usuario.conquistaDestaque.isEmpty() ? usuario.conquistaDestaque : 'O utilizador ainda não selecionou um destaque.'}"></p>
             </div>
         </div>
 
@@ -72,7 +72,7 @@
                 <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
                     <div style="display: flex; gap: 10px; flex-grow: 1;">
                         <label for="post-img" class="btn-img-upload"><i class="fas fa-image"></i> Imagem (PNG/JPG)</label>
-                        <input type="file" name="imagemArquivo" accept="image/png, image/jpeg, image/jpg" id="post-img" style="display:none;">
+                        <input type="file" name="imagensArquivos" accept="image/png, image/jpeg, image/jpg" id="post-img" multiple style="display:none;">
                         
                         <select name="nomeJogoVinculado" class="game-select-input">
                             <option value="">Nenhum Jogo (Opcional)</option>
@@ -92,31 +92,31 @@
                 <p>Nenhuma publicação encontrada.</p>
             </div>
 
-            <article class="profile-post-card" th:each="post : ${postsUsuario}">
-                <div class="post-header">
-                    <img th:src="${post.usuario.fotoPerfil != null && !post.usuario.fotoPerfil.isEmpty() ? post.usuario.fotoPerfil : 'https://th.bing.com/th/id/R.4fa196e40b50668e0d732be31bc2dbfe?rik=Xci%2fN2aZPE%2bfAQ&pid=ImgRaw&r=0'}" class="avatar">
-                    <div class="user-info">
-                        <strong class="author-name">
-                            <a th:href="@{/perfil/{username}(username=${post.usuario.username})}" th:text="${post.usuario.username}"></a>
+            <article th:each="post : ${postsUsuario}" style="background: #1a1a2e; border: 1px solid #2a2a4a; border-radius: 12px; padding: 20px; margin-bottom: 20px; display: flex; flex-direction: column; width: 100%; box-sizing: border-box;">
+                <header style="display: flex; align-items: center; gap: 15px; margin-bottom: 15px; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 15px;">
+                    <img th:src="${post.usuario.fotoPerfil != null && !post.usuario.fotoPerfil.isEmpty() ? post.usuario.fotoPerfil : 'https://th.bing.com/th/id/R.4fa196e40b50668e0d732be31bc2dbfe?rik=Xci%2fN2aZPE%2bfAQ&pid=ImgRaw&r=0'}" style="width: 50px; height: 50px; border-radius: 50%; object-fit: cover;">
+                    <div>
+                        <strong style="color: #fff; font-size: 1.1em; display: block;">
+                            <a th:href="@{/perfil/{username}(username=${post.usuario.username})}" th:text="${post.usuario.username}" style="color: white; text-decoration: none;"></a>
                         </strong> 
-                        
-                        <span class="timestamp" th:text="${#temporals.format(post.data, 'dd/MM/yyyy')} + ' às ' + ${#temporals.format(post.hora, 'HH:mm')}"></span>
-                        
-                        <span class="subtext" th:if="${post.jogoVinculado != null}">falou sobre <b class="game-tag" th:text="${post.jogoVinculado.nomeJogo}">Jogo</b></span>
+                        <span th:text="${#temporals.format(post.data, 'dd/MM/yyyy')} + ' às ' + ${#temporals.format(post.hora, 'HH:mm')}" style="color: #aaa; font-size: 0.85em;"></span>
+                        <span th:if="${post.jogoVinculado != null}" style="display: block; margin-top: 5px; color: #aaa; font-size: 0.85em;">falou sobre <b style="color:#a980ff; background: rgba(169,128,255,0.1); padding: 2px 8px; border-radius: 10px;" th:text="${post.jogoVinculado.nomeJogo}"></b></span>
+                    </div>
+                </header>
+                
+                <div style="flex-grow: 1;">
+                    <p th:text="${post.texto}" style="color: #ccc; line-height: 1.5; margin-bottom: 15px; word-wrap: break-word;"></p>
+                    <div th:if="${post.imagensUrls != null and !post.imagensUrls.isEmpty()}" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 10px; margin-bottom: 15px;">
+                        <img th:each="imgUrl : ${post.imagensUrls}" th:src="${imgUrl}" style="width: 100%; height: 300px; object-fit: cover; border-radius: 8px; border: 1px solid #302b63;">
                     </div>
                 </div>
-                
-                <div class="post-content">
-                    <p th:text="${post.texto}" class="post-text-body"></p>
-                    <img th:if="${post.imagemUrl != null}" th:src="${post.imagemUrl}" class="post-attached-img">
-                </div>
 
-                <footer class="post-footer">
-                    <button type="button" th:onclick="|reagirPostagem(${post.idPost}, 'gostei', this)|" class="btn-react btn-like">
+                <footer style="display: flex; justify-content: flex-start; gap: 15px; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 15px; margin-top: auto; flex-wrap: wrap;">
+                    <button type="button" th:onclick="|reagirPostagem(${post.idPost}, 'gostei', this)|" style="background: transparent; border: 1px solid #4ade80; color: #4ade80; padding: 8px 16px; border-radius: 20px; cursor: pointer; font-weight: bold; font-size: 0.9em; height: fit-content; display: flex; align-items: center; gap: 8px; transition: 0.3s;">
                         <i class="fas fa-thumbs-up"></i> Gostei (<span th:text="${post.reacaoGostei}"></span>)
                     </button>
 
-                    <button type="button" th:onclick="|reagirPostagem(${post.idPost}, 'desgostei', this)|" class="btn-react btn-dislike">
+                    <button type="button" th:onclick="|reagirPostagem(${post.idPost}, 'desgostei', this)|" style="background: transparent; border: 1px solid #e94560; color: #e94560; padding: 8px 16px; border-radius: 20px; cursor: pointer; font-weight: bold; font-size: 0.9em; height: fit-content; display: flex; align-items: center; gap: 8px; transition: 0.3s;">
                         <i class="fas fa-thumbs-down"></i> Não Gostei (<span th:text="${post.reacaoDesgostei}"></span>)
                     </button>
                 </footer>
@@ -182,7 +182,6 @@
             container.appendChild(novaLinha);
         }
 
-        // LÓGICA AJAX DAS REAÇÕES
         function reagirPostagem(postId, tipo, botaoApertado) {
             const formData = new FormData();
             formData.append('tipo', tipo);

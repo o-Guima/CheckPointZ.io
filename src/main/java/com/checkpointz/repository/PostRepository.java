@@ -13,6 +13,5 @@ public interface PostRepository extends JpaRepository<Post, Integer> {
     
     List<Post> findByUsuario_UserIdOrderByDataCriacaoDesc(Integer userId);
 
-    // NOVA LINHA: Busca posts onde o ID do jogo vinculado seja igual ao que estamos a ver
-    List<Post> findByJogoVinculado_IdJogoOrderByDataCriacaoDesc(Integer idJogo);
+        List<Post> findByJogoVinculado_IdJogoOrderByDataCriacaoDesc(Integer idJogo);
 }

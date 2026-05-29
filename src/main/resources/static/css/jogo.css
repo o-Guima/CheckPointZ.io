@@ -39,7 +39,6 @@ body {
     margin: 0 auto;
 }
 
-/* Botão de Voltar */
 .back-link {
     display: inline-flex;
     align-items: center;
@@ -74,9 +73,7 @@ body {
     }
 }
 
-/* =======================================
-   1. GALERIA DE IMAGENS
-   ======================================= */
+
 
 .gallery-section {
     display: flex;
@@ -154,9 +151,6 @@ body {
     opacity: 1;
 }
 
-/* =======================================
-   2. PAINEL DE INFORMAÇÕES
-   ======================================= */
 
 .info-card {
     background: none;
@@ -311,9 +305,7 @@ body {
     transform: scale(1.05);
 }
 
-/* =======================================
-   3. SEÇÃO DE REVIEWS (NOVAS POSTAGENS)
-   ======================================= */
+
 
 .reviews-section {
     margin-top: 40px;

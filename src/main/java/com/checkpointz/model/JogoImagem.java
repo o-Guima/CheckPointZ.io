@@ -13,7 +13,7 @@ public class JogoImagem {
     @Column(name = "url_imagem")
     private String urlImagem;
 
-    // O relacionamento Muitas Imagens para Um Jogo
+   
     @ManyToOne
     @JoinColumn(name = "id_jogo") 
     private JogoApi jogo;

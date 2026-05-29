@@ -48,30 +48,18 @@ public class UsuarioController {
         String tokenUnico = UUID.randomUUID().toString(); 
         novoUsuario.setTokenVerificacao(tokenUnico);
 
-        // Salva provisoriamente no banco
         usuarioRepository.save(novoUsuario);
 
-        // ==========================================
-        // TENTATIVA DE ENVIO DE E-MAIL COM PROTEÇÃO
-        // ==========================================
         try {
-            // Tenta enviar o e-mail
             emailService.enviarEmailVerificacao(email, tokenUnico);
             
         } catch (Exception e) {
-            // SE A GOOGLE RECUSAR O E-MAIL (Erro 555-5.5.2, etc):
-            // 1. Apagamos a conta do banco de dados para não travar o nome de utilizador
             usuarioRepository.delete(novoUsuario);
-            
-            // 2. Mostramos o erro no console para você saber o que houve
             System.out.println("❌ Erro do Gmail: " + e.getMessage());
-            
-            // 3. Devolvemos o utilizador à tela de cadastro com um aviso limpo
             attributes.addFlashAttribute("erro", "Falha ao enviar o e-mail de verificação. Verifique se o e-mail é válido e tente novamente.");
             return "redirect:/cadastro"; 
         }
 
-        // Se o e-mail for enviado com sucesso, vai para o index com aviso verde!
         attributes.addFlashAttribute("sucesso", "Cadastro realizado! Por favor, verifique a sua caixa de e-mail (e Spam) para ativar a conta.");
         return "redirect:/index"; 
     }

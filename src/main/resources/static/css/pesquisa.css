@@ -4,13 +4,12 @@ body {
     color: white;
 }
 
-/* 1. BARRA DE PESQUISA CENTRALIZADA E MAIOR */
 .search-hero {
     background: #1a1a2e;
-    padding: 60px 20px; /* Mais espaço vertical */
+    padding: 60px 20px; 
     display: flex;
-    flex-direction: column; /* Organiza os itens de cima para baixo */
-    align-items: center; /* Centraliza no meio da tela */
+    flex-direction: column; 
+    align-items: center; 
     justify-content: center;
     position: relative;
     border-bottom: 2px solid #e94560;
@@ -30,16 +29,16 @@ body {
     display: flex;
     gap: 15px;
     width: 100%;
-    max-width: 800px; /* Limita o tamanho para não esticar demais no PC */
+    max-width: 800px; 
     margin-top: 15px;
 }
 
 .big-search-form input {
     flex-grow: 1;
-    padding: 16px 20px; /* Inputs mais gordinhos */
+    padding: 16px 20px; 
     border-radius: 10px;
     border: none;
-    font-size: 1.2em; /* Texto maior */
+    font-size: 1.2em;
 }
 
 .search-filter-select {
@@ -61,7 +60,7 @@ body {
     border-radius: 10px;
     cursor: pointer;
     font-weight: bold;
-    font-size: 1.2em; /* Botão de busca maior */
+    font-size: 1.2em;
     transition: 0.3s;
 }
 
@@ -69,7 +68,7 @@ body {
     background: #d63d56;
 }
 
-/* 2. ESTRUTURA DA PÁGINA */
+
 .page-wrapper-search {
     padding: 40px 20px;
     max-width: 1200px;
@@ -78,7 +77,7 @@ body {
 
 .results-header {
     margin-bottom: 40px;
-    text-align: center; /* Centraliza o título "Resultados para..." */
+    text-align: center; 
 }
 
 .section-divider {
@@ -93,7 +92,7 @@ body {
     font-size: 1.5em;
 }
 
-/* 3. GRID DE USUÁRIOS (CARDS CLICÁVEIS) */
+
 .users-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
@@ -103,29 +102,29 @@ body {
 .user-card {
     background: #16213e;
     display: flex;
-    flex-direction: column; /* Coloca a foto em cima e o texto embaixo */
+    flex-direction: column; 
     align-items: center;
     padding: 30px 20px;
     border-radius: 12px;
     color: white;
-    text-decoration: none; /* Tira o sublinhado do link */
+    text-decoration: none; 
     transition: 0.3s;
     box-shadow: 0 5px 15px rgba(0,0,0,0.3);
 }
 
 .user-card:hover {
-    transform: translateY(-5px); /* Efeito de pular igual aos jogos */
+    transform: translateY(-5px); 
     box-shadow: 0 10px 25px rgba(0,0,0,0.6);
     background: #1e2c54;
 }
 
 .user-card img {
-    width: 100px; /* Tamanho da foto contido e perfeito */
+    width: 100px; 
     height: 100px;
     border-radius: 50%;
     object-fit: cover;
     margin-bottom: 15px;
-    border: 3px solid #a980ff; /* Borda estilizada em volta da foto */
+    border: 3px solid #a980ff; 
 }
 
 .user-card-info {
@@ -145,7 +144,7 @@ body {
     line-height: 1.4;
 }
 
-/* 4. GRID DE JOGOS E BOTÕES MAIORES */
+
 .results-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
@@ -206,16 +205,16 @@ body {
     display: block;
 }
 
-/* O BOTÃO MAIOR E CONFORTÁVEL */
+
 .btn-view {
     display: block;
     background: #e94560;
     color: white;
     text-decoration: none;
-    padding: 12px; /* Botão mais gordinho (antes era 8px) */
+    padding: 12px; 
     border-radius: 8px;
     font-weight: bold;
-    font-size: 1.1em; /* Fonte maior no botão */
+    font-size: 1.1em; 
     transition: 0.3s;
 }
 
@@ -223,7 +222,7 @@ body {
     background: #d63d56;
 }
 
-/* CASO NÃO ENCONTRE RESULTADOS */
+
 .no-results {
     text-align: center;
     color: #aaa;
